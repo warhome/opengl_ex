@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal">
@@ -13,6 +14,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
     </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
@@ -29,12 +31,71 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/open_fab"
-        android:layout_width="wrap_content"
+        android:layout_width="108dp"
         android:layout_height="wrap_content"
         android:layout_gravity="start|bottom"
         android:layout_margin="16dp"
+        android:layout_marginBottom="48dp"
+        android:layout_marginLeft="104dp"
         android:src="@drawable/folder_open"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gl_layout">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+                <CheckBox
+                    android:id="@+id/checkBoxAutofix"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/autofix"
+                    android:textSize="23sp"
+                    android:layout_toStartOf="@id/checkBoxAutofix"
+                    />
+                <CheckBox
+                    android:id="@+id/checkBoxNegative"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@id/checkBoxAutofix"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/negative"
+                    android:textSize="23sp"
+                    android:layout_toStartOf="@id/checkBoxNegative"
+                    android:layout_below="@id/checkBoxAutofix"/>
+
+                <SeekBar
+                    android:id="@+id/brightness_seekbar"
+                    android:layout_width="150dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignStart="@+id/checkBoxAutofix"
+                    android:progress="1"
+                    android:max="12"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/brightness"
+                        android:textSize="23sp"
+                        android:layout_toStartOf="@id/brightness_seekbar"
+                        android:layout_below="@id/checkBoxNegative"
+                        />
+        </RelativeLayout>
+    </ScrollView>
 
 </android.support.constraint.ConstraintLayout>

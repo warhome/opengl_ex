@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.ConfigurationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.media.effect.Effect;
 import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
@@ -17,15 +18,18 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.TextureView;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,11 +40,21 @@ public class MainActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 4321;
     private static final int GALLERY_REQUEST = 1234;
     private boolean rendererSet = false;
+    private boolean isSet = false;
+    private List<String> dataset = new ArrayList<>();
 
-    FloatingActionButton openFab;
-    FloatingActionButton cameraFab;
+    private FloatingActionButton openFab;
+    private FloatingActionButton cameraFab;
+    private CheckBox mAutofixCheckbox;
+    private CheckBox mNegativeCheckbox;
+    private SeekBar mSeekBar;
+
     Bitmap in_image;
+    Bitmap sv_image;
+
     RelativeLayout rl;
+    GLRenderer glRenderer;
+    GLSurfaceView glSurfaceView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
 
+        // Layout for GLSurfaceView
+        rl = findViewById(R.id.gl_layout);
+
         // Fab's
         // Open file from gallery
         openFab = findViewById(R.id.open_fab);
@@ -59,11 +76,13 @@ public class MainActivity extends AppCompatActivity {
         // Open camera
         cameraFab = findViewById(R.id.camera_fab);
         cameraFab.setOnClickListener(view -> openCamera());
+
+        //
+        mAutofixCheckbox = findViewById(R.id.checkBoxAutofix);
+        mNegativeCheckbox = findViewById(R.id.checkBoxNegative);
+        mSeekBar = findViewById(R.id.brightness_seekbar);
     }
 
-    public static float convertPixelsToDp(float px, Context context){
-        return px / ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-    }
 
     void openCamera (){
         // Check camera permissions
@@ -85,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    // TODO: Переписать этот метод
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -93,15 +113,16 @@ public class MainActivity extends AppCompatActivity {
                 case GALLERY_REQUEST:
                     Uri selectedImage = data.getData();
                     try {
-                        in_image = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage);
-                        setGlSurfaceView();
+                        in_image = (MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage));
+                        createGLSurfaceView();
+
                     } catch (IOException e) {
                         Log.i("TAG", "Some exception " + e);
                     }
                     break;
                 case CAMERA_REQUEST:
-                    in_image = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
-                    setGlSurfaceView();
+                    in_image = ((Bitmap) Objects.requireNonNull(data.getExtras()).get("data"));
+                    createGLSurfaceView();
             }
     }
 
@@ -132,16 +153,19 @@ public class MainActivity extends AppCompatActivity {
                 ||Build.MODEL.contains("Android SDK built for x86")));
     }
 
-    private void setGlSurfaceView() {
-        GLSurfaceView glSurfaceView = new GLSurfaceView(getApplicationContext());
-        glSurfaceView.setEGLContextClientVersion(2);
-        glSurfaceView.setRenderer(new GLRenderer(getApplicationContext(), in_image));
-        rendererSet = true;
 
-        // Layout for GLSurfaceView
-        rl = findViewById(R.id.gl_layout);
-       // rl.getLayoutParams().height = (int)convertPixelsToDp(in_image.getHeight(), getApplicationContext());
-       // rl.getLayoutParams().width  = (int)convertPixelsToDp(in_image.getWidth(), getApplicationContext());
+    private void createGLSurfaceView() {
+        if(isSet) glSurfaceView.setVisibility(View.GONE);
+        else isSet = true;
+
+        glSurfaceView = new GLSurfaceView(getApplicationContext());
+        glSurfaceView.setEGLContextClientVersion(2);
+        glRenderer = new GLRenderer(this);
+        glRenderer.setCurrEffect("ng");
+      //  glRenderer.setParam(5);
+        glRenderer.setBitmap(in_image);
+        glSurfaceView.setRenderer(glRenderer);
+
         rl.addView(glSurfaceView);
     }
 }

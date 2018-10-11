@@ -2,6 +2,8 @@ package com.example.misaka.opengl_ex;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.util.DisplayMetrics;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,5 +35,9 @@ public class FileUtils {
             nfex.printStackTrace();
         }
         return stringBuilder.toString();
+    }
+
+    public static float convertPixelsToDp(float px, Context context){
+        return px / ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 }
