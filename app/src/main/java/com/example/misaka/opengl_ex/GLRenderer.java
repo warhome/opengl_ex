@@ -10,6 +10,8 @@ import android.opengl.GLSurfaceView.Renderer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -58,26 +60,30 @@ public class GLRenderer implements Renderer {
     private int mImageWidth;
     private int mImageHeight;
 
-    public void setParam(float param) {
+    public void setParam(List<Float> param) {
         this.param = param;
     }
 
-    private float param;
+    private List<Float> param = new ArrayList<>();
+    private List<String> currEffect = new ArrayList<>();
+    private List<Effect> mEffect = new ArrayList<>();
 
-    private Effect mEffect;
     private EffectContext mEffectContext;
 
-    public void setCurrEffect(String currEffect) {
+    void setCurrEffect(List<String> currEffect) {
         this.currEffect = currEffect;
     }
 
-    private String currEffect = "";
+    public GLRenderer(Context context, List<String> currEffect) {
+        this.context = context;
+        this.currEffect = currEffect;
+    }
 
     GLRenderer(Context context) {
         this.context = context;
     }
 
-    public void setBitmap(Bitmap bitmap) {
+    void setBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;
     }
 
@@ -160,33 +166,48 @@ public class GLRenderer implements Renderer {
 
     private void initEffect() {
         EffectFactory effectFactory = mEffectContext.getFactory();
-        if (mEffect != null) {
-            mEffect.release();
+        for (int i = 0; i < currEffect.size(); i++) {
+           /* if (mEffect == null) {
+                mEffect.get(i).release();
+            }*/
+
+            switch (currEffect.get(i)) {
+                case "af":
+                    mEffect.add(effectFactory.createEffect(
+                            EffectFactory.EFFECT_AUTOFIX));
+                    mEffect.get(i).setParameter("scale", 0.5f);
+                    break;
+                case "bw":
+                    mEffect.add(effectFactory.createEffect(
+                            EffectFactory.EFFECT_BLACKWHITE));
+                    mEffect.get(i).setParameter("black", .1f);
+                    mEffect.get(i).setParameter("white", .7f);
+                    break;
+                case "br":
+                    mEffect.add(effectFactory.createEffect(
+                            EffectFactory.EFFECT_BRIGHTNESS));
+                    mEffect.get(i).setParameter("brightness", .4f);
+                    break;
+                case "ng":
+                    mEffect.add(i, effectFactory.createEffect(
+                            EffectFactory.EFFECT_NEGATIVE));
+                    break;
+                case "rt":
+                    mEffect.add(effectFactory.createEffect(
+                            EffectFactory.EFFECT_ROTATE));
+                    mEffect.get(i).setParameter("angle", 90);
+                    break;
+                default:
+                    break;
+            }
         }
-        mEffect = effectFactory.createEffect(
-                EffectFactory.EFFECT_NEGATIVE);
-       /* switch (currEffect) {
-            case "af":
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_AUTOFIX);
-                mEffect.setParameter("scale", 0.5f);
-                break;
-            case "bw":
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_BLACKWHITE);
-                mEffect.setParameter("black", .1f);
-                mEffect.setParameter("white", .7f);
-                break;
-            case "br":
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_BRIGHTNESS);
-                mEffect.setParameter("brightness", param);
-                break;
-            case "ng":
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_NEGATIVE);
-                break;
-                // region
+
+        // Rotate image to normal position
+        mEffect.add(effectFactory.createEffect(
+                EffectFactory.EFFECT_FLIP));
+        mEffect.get(mEffect.size() - 1).setParameter("vertical", true);
+    }
+                /*// region
             case R.id.contrast:
                 mEffect = effectFactory.createEffect(
                         EffectFactory.EFFECT_CONTRAST);
@@ -276,12 +297,23 @@ public class GLRenderer implements Renderer {
                         EffectFactory.EFFECT_VIGNETTE);
                 mEffect.setParameter("scale", .5f);
                 break;
-           // endregion
-            default:
-                break;
-        }*/
-    }
+           // endregion*/
+
     private void applyEffect() {
-        mEffect.apply(texture[0], mImageWidth, mImageHeight, texture[1]);
+       /* for (Effect effect : mEffect) {
+            effect.apply(texture[0], mImageWidth, mImageHeight, texture[1]);
+        }*/
+        int mEffectCount = mEffect.size();
+
+        if (mEffectCount > 0) {
+            mEffect.get(0).apply(texture[0], mImageWidth, mImageHeight, texture[1]);
+            for (int i = 1; i < mEffectCount; i++) {
+                int sourceTexture = texture[1];
+                int destinationTexture = texture[2];
+                mEffect.get(i).apply(sourceTexture, mImageWidth, mImageHeight, destinationTexture);
+                texture[1] = destinationTexture;
+                texture[2] = sourceTexture;
+            }
+        }
     }
 }

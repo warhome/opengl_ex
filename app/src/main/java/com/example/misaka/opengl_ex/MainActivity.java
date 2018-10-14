@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int GALLERY_REQUEST = 1234;
     private boolean rendererSet = false;
     private boolean isSet = false;
-    private List<String> dataset = new ArrayList<>();
 
     private FloatingActionButton openFab;
     private FloatingActionButton cameraFab;
@@ -161,11 +160,16 @@ public class MainActivity extends AppCompatActivity {
         glSurfaceView = new GLSurfaceView(getApplicationContext());
         glSurfaceView.setEGLContextClientVersion(2);
         glRenderer = new GLRenderer(this);
-        glRenderer.setCurrEffect("ng");
-      //  glRenderer.setParam(5);
+        List<String> effects = new ArrayList<>();
+        effects.add("ng");
+        glRenderer.setCurrEffect(effects);
         glRenderer.setBitmap(in_image);
         glSurfaceView.setRenderer(glRenderer);
 
         rl.addView(glSurfaceView);
+    }
+
+    private void setEffects(List<String> effects) {
+
     }
 }

@@ -13,15 +13,15 @@ import static android.opengl.GLES20.glActiveTexture;
 import static android.opengl.GLES20.glBindTexture;
 import static android.opengl.GLES20.glGenTextures;
 
-public class GLTextureHelper {
+class GLTextureHelper {
     private static final String TAG = "TextureHelper";
 
     // Load texture from bitmap
-    public static int[] loadTexture(Context context,  Bitmap bitmap) {
+    static int[] loadTexture(Context context, Bitmap bitmap) {
 
         // Create texture object
-        final int[] textureIds = new int[2];
-        glGenTextures(2, textureIds, 0);
+        final int[] textureIds = new int[3];
+        glGenTextures(3, textureIds, 0);
         if (textureIds[0] == 0) {
             Log.w(TAG, "Could not generate a new OpenGL texture object.");
             Toast.makeText(context, "Could not generate a new OpenGL texture object.", Toast.LENGTH_SHORT).show();
