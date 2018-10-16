@@ -60,6 +60,11 @@ public class GLRenderer implements Renderer {
     private int mImageWidth;
     private int mImageHeight;
 
+    private int width;
+    private int height;
+
+    private boolean isDraw = false;
+
     public void setParam(List<Float> param) {
         this.param = param;
     }
@@ -89,22 +94,23 @@ public class GLRenderer implements Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 arg0, EGLConfig arg1) {
-        glClearColor(0f, 0f, 0f, 1f);
+        /*glClearColor(0f, 0f, 0f, 1f);
         glEnable(GL_DEPTH_TEST);
 
-        mEffectContext = EffectContext.createWithCurrentGlContext();
+        mEffectContext = EffectContext.createWithCurrentGlContext();*/
 
         createAndUseProgram(R.raw.texture_vertex_shader, R.raw.texture_fragment_shader);
         getLocations();
         prepareData();
         bindData();
-        initEffect();
-        applyEffect();
+        /*initEffect();
+        applyEffect();*/
     }
 
     @Override
     public void onSurfaceChanged(GL10 arg0, int width, int height) {
-        glViewport(0, 0, width, height);
+        this.width = width;
+        this.height = height;
     }
 
     private void prepareData() {
@@ -158,10 +164,30 @@ public class GLRenderer implements Renderer {
 
     @Override
     public void onDrawFrame(GL10 arg0) {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture[1]);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+            if(isDraw) {
+                // onSurfaceCreated methods
+                glClearColor(0f, 0f, 0f, 1f);
+                glEnable(GL_DEPTH_TEST);
+
+                mEffectContext = EffectContext.createWithCurrentGlContext();
+
+                /*createAndUseProgram(R.raw.texture_vertex_shader, R.raw.texture_fragment_shader);
+                getLocations();
+                prepareData();
+                bindData();*/
+                initEffect();
+                applyEffect();
+
+                // onSurfaceChanged methods
+                glViewport(0, 0, width, height);
+
+                // onDrawFrame methods
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, texture[1]);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+            }
+            else isDraw = true;
     }
 
     private void initEffect() {
@@ -315,5 +341,7 @@ public class GLRenderer implements Renderer {
                 texture[2] = sourceTexture;
             }
         }
+
+        mEffect.clear();
     }
 }

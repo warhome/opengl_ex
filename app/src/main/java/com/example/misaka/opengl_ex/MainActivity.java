@@ -8,24 +8,21 @@ import android.content.Intent;
 import android.content.pm.ConfigurationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.media.effect.Effect;
 import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
+import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,51 +32,52 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
     // TODO: Заблокировать orientation(?)
-
     private static final int PERMISSION_REQUEST = 1111;
     private static final int CAMERA_REQUEST = 4321;
     private static final int GALLERY_REQUEST = 1234;
     private boolean rendererSet = false;
-    private boolean isSet = false;
-
-    private FloatingActionButton openFab;
-    private FloatingActionButton cameraFab;
-    private CheckBox mAutofixCheckbox;
-    private CheckBox mNegativeCheckbox;
-    private SeekBar mSeekBar;
+    private boolean isGlSurfaceViewSet = false;
+    private List<String> effects = new ArrayList<>();
 
     Bitmap in_image;
-    Bitmap sv_image;
-
     RelativeLayout rl;
     GLRenderer glRenderer;
     GLSurfaceView glSurfaceView;
+
+    Switch autofix;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         if (!isSupportES2()) {
             Toast.makeText(this, "OpenGL ES 2.0 is not supported ):", Toast.LENGTH_LONG).show();
             finish();
         }
 
+        // Toolbar
+        Toolbar toolbar = findViewById(R.id.tool_bar);
+        setSupportActionBar(toolbar);
+
+        // Open file from gallery
+        Button b = toolbar.findViewById(R.id.button);
+        b.setOnClickListener(view -> openImage());
+
         // Layout for GLSurfaceView
         rl = findViewById(R.id.gl_layout);
 
-        // Fab's
-        // Open file from gallery
-        openFab = findViewById(R.id.open_fab);
-        openFab.setOnClickListener(view -> openImage());
+        // Filters
+        autofix = findViewById(R.id.autofixSwitch);
+        autofix.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked)
+                effects.add("ng");
+            else
+                effects.remove("ng");
 
-        // Open camera
-        cameraFab = findViewById(R.id.camera_fab);
-        cameraFab.setOnClickListener(view -> openCamera());
-
-        //
-        mAutofixCheckbox = findViewById(R.id.checkBoxAutofix);
-        mNegativeCheckbox = findViewById(R.id.checkBoxNegative);
-        mSeekBar = findViewById(R.id.brightness_seekbar);
+            glRenderer.setCurrEffect(effects);
+            glSurfaceView.requestRender();
+        });
     }
 
 
@@ -107,13 +105,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == Activity.RESULT_OK)
-            switch (requestCode){
+        if(resultCode == Activity.RESULT_OK) {
+
+            if(in_image != null) in_image.recycle();
+
+            switch (requestCode) {
                 case GALLERY_REQUEST:
                     Uri selectedImage = data.getData();
                     try {
                         in_image = (MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage));
                         createGLSurfaceView();
+                        glSurfaceView.requestRender();
 
                     } catch (IOException e) {
                         Log.i("TAG", "Some exception " + e);
@@ -123,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
                     in_image = ((Bitmap) Objects.requireNonNull(data.getExtras()).get("data"));
                     createGLSurfaceView();
             }
+        }
     }
 
     @Override
@@ -145,31 +148,33 @@ public class MainActivity extends AppCompatActivity {
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         ConfigurationInfo configurationInfo = Objects.requireNonNull(activityManager).getDeviceConfigurationInfo();
         return configurationInfo.reqGlEsVersion >= 0x20000
-                || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1 && (Build.FINGERPRINT.startsWith("generic")
-                ||Build.FINGERPRINT.startsWith("unknown")
-                ||Build.MODEL.contains("google_sdk")
-                ||Build.MODEL.contains("Emulator")
-                ||Build.MODEL.contains("Android SDK built for x86")));
+                || Build.FINGERPRINT.startsWith("generic")
+                || Build.FINGERPRINT.startsWith("unknown")
+                || Build.MODEL.contains("google_sdk")
+                || Build.MODEL.contains("Emulator")
+                || Build.MODEL.contains("Android SDK built for x86");
     }
 
 
     private void createGLSurfaceView() {
-        if(isSet) glSurfaceView.setVisibility(View.GONE);
-        else isSet = true;
+        if(isGlSurfaceViewSet) glSurfaceView.setVisibility(View.GONE);
+        else isGlSurfaceViewSet = true;
 
         glSurfaceView = new GLSurfaceView(getApplicationContext());
         glSurfaceView.setEGLContextClientVersion(2);
         glRenderer = new GLRenderer(this);
-        List<String> effects = new ArrayList<>();
-        effects.add("ng");
-        glRenderer.setCurrEffect(effects);
         glRenderer.setBitmap(in_image);
         glSurfaceView.setRenderer(glRenderer);
+        glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 
         rl.addView(glSurfaceView);
     }
 
     private void setEffects(List<String> effects) {
+
+    }
+
+    private void setActive() {
 
     }
 }
