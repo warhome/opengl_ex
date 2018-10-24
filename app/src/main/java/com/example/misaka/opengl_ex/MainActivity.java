@@ -1,6 +1,7 @@
 package com.example.misaka.opengl_ex;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
@@ -19,33 +20,53 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity {
+import io.reactivex.Observer;
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
+public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener, Switch.OnCheckedChangeListener{
 
     // TODO: Заблокировать orientation(?)
+    // Requests
     private static final int PERMISSION_REQUEST = 1111;
     private static final int CAMERA_REQUEST = 4321;
     private static final int GALLERY_REQUEST = 1234;
+
+    // gl
     private boolean rendererSet = false;
     private boolean isGlSurfaceViewSet = false;
-    private List<String> effects = new ArrayList<>();
-
-    Bitmap in_image;
-    RelativeLayout rl;
     GLRenderer glRenderer;
     GLSurfaceView glSurfaceView;
 
-    Switch autofix;
+    private List<Filter> filters = new ArrayList<>();
+    FilterHelper filterHelper = new FilterHelper();
 
+    Bitmap in_image;
+    RelativeLayout rl;
+    Switch autofix;
+    Switch cross;
+    Switch documentary;
+    Switch negative;
+
+    SeekBar bright;
+    SeekBar contrast;
+
+    @SuppressLint("CheckResult")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,15 +90,18 @@ public class MainActivity extends AppCompatActivity {
 
         // Filters
         autofix = findViewById(R.id.autofixSwitch);
-        autofix.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked)
-                effects.add("ng");
-            else
-                effects.remove("ng");
+        bright = findViewById(R.id.seekBarBright);
+        contrast = findViewById(R.id.seekBarContrast);
+        cross = findViewById(R.id.crossprocessSwitch);
+        documentary = findViewById(R.id.documentarySwitch);
+        negative = findViewById(R.id.negativeSwitch);
 
-            glRenderer.setCurrEffect(effects);
-            glSurfaceView.requestRender();
-        });
+        bright.setOnSeekBarChangeListener(this);
+        contrast.setOnSeekBarChangeListener(this);
+        autofix.setOnCheckedChangeListener(this);
+        cross.setOnCheckedChangeListener(this);
+        documentary.setOnCheckedChangeListener(this);
+        negative.setOnCheckedChangeListener(this);
     }
 
 
@@ -170,11 +194,67 @@ public class MainActivity extends AppCompatActivity {
         rl.addView(glSurfaceView);
     }
 
-    private void setEffects(List<String> effects) {
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        switch (seekBar.getId()) {
+            case R.id.seekBarBright:
+                if(filterHelper.isContains(filters, "br")) filterHelper.deleteElement(filters, "br");
+                if(progress != 50) filters.add(new Filter("br", (float)progress / 50f));
+                break;
+            case R.id.seekBarContrast:
+                if(filterHelper.isContains(filters, "ct")) filterHelper.deleteElement(filters, "ct");
+                if(progress != 50) filters.add(new Filter("ct", (float)progress / 50f));
+                break;
+        }
+        glSurfaceView.queueEvent(() -> {
+            glRenderer.setFilters(filters);
+            glSurfaceView.requestRender();
+        });
+       // glRenderer.setFilters(filters);
+       // glSurfaceView.requestRender();
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
 
     }
 
-    private void setActive() {
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
 
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        switch (buttonView.getId()) {
+            case R.id.autofixSwitch:
+                if (isChecked)
+                    filters.add(new Filter("af"));
+                else
+                    filterHelper.deleteElement(filters, "af");
+            break;
+            case R.id.crossprocessSwitch:
+                if (isChecked)
+                    filters.add(new Filter("cp"));
+                else
+                    filterHelper.deleteElement(filters, "cp");
+            break;
+            case R.id.documentarySwitch:
+                if (isChecked)
+                    filters.add(new Filter("dt"));
+                else
+                    filterHelper.deleteElement(filters, "dt");
+            case R.id.negativeSwitch:
+                if (isChecked)
+                    filters.add(new Filter("ng"));
+                else
+                    filterHelper.deleteElement(filters, "ng");
+            break;
+        }
+
+        glSurfaceView.queueEvent(() -> {
+            glRenderer.setFilters(filters);
+            glSurfaceView.requestRender();
+        });
     }
 }

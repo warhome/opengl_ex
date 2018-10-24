@@ -65,23 +65,14 @@ public class GLRenderer implements Renderer {
 
     private boolean isDraw = false;
 
-    public void setParam(List<Float> param) {
-        this.param = param;
-    }
+    List<Filter> filters = new ArrayList<>();
 
-    private List<Float> param = new ArrayList<>();
-    private List<String> currEffect = new ArrayList<>();
-    private List<Effect> mEffect = new ArrayList<>();
 
     private EffectContext mEffectContext;
+    private List<Effect> mEffect = new ArrayList<>();
 
-    void setCurrEffect(List<String> currEffect) {
-        this.currEffect = currEffect;
-    }
-
-    public GLRenderer(Context context, List<String> currEffect) {
-        this.context = context;
-        this.currEffect = currEffect;
+    public void setFilters(List<Filter> filters) {
+        this.filters = filters;
     }
 
     GLRenderer(Context context) {
@@ -192,36 +183,53 @@ public class GLRenderer implements Renderer {
 
     private void initEffect() {
         EffectFactory effectFactory = mEffectContext.getFactory();
-        for (int i = 0; i < currEffect.size(); i++) {
+        for (int i = 0; i < filters.size(); i++) {
            /* if (mEffect == null) {
                 mEffect.get(i).release();
             }*/
-
-            switch (currEffect.get(i)) {
+            switch (filters.get(i).getName()) {
                 case "af":
                     mEffect.add(effectFactory.createEffect(
                             EffectFactory.EFFECT_AUTOFIX));
-                    mEffect.get(i).setParameter("scale", 0.5f);
+                    mEffect.get(i).setParameter("scale",0.5f);
                     break;
                 case "bw":
                     mEffect.add(effectFactory.createEffect(
                             EffectFactory.EFFECT_BLACKWHITE));
-                    mEffect.get(i).setParameter("black", .1f);
-                    mEffect.get(i).setParameter("white", .7f);
+                    mEffect.get(i).setParameter("black", filters.get(i).getParams().get(0));
+                    mEffect.get(i).setParameter("white", filters.get(i).getParams().get(1));
                     break;
                 case "br":
                     mEffect.add(effectFactory.createEffect(
                             EffectFactory.EFFECT_BRIGHTNESS));
-                    mEffect.get(i).setParameter("brightness", .4f);
+                    mEffect.get(i).setParameter("brightness", filters.get(i).getParams().get(0));
                     break;
                 case "ng":
-                    mEffect.add(i, effectFactory.createEffect(
+                    mEffect.add(effectFactory.createEffect(
                             EffectFactory.EFFECT_NEGATIVE));
                     break;
                 case "rt":
                     mEffect.add(effectFactory.createEffect(
                             EffectFactory.EFFECT_ROTATE));
-                    mEffect.get(i).setParameter("angle", 90);
+                    mEffect.get(i).setParameter("angle",filters.get(i).getParams().get(0));
+                    break;
+                case "vg":
+                    mEffect.add(effectFactory.createEffect(
+                            EffectFactory.EFFECT_VIGNETTE));
+                    mEffect.get(i).setParameter("scale",filters.get(i).getParams().get(0));
+                    break;
+                case "ct":
+                    mEffect.add(effectFactory.createEffect(
+                            EffectFactory.EFFECT_CONTRAST));
+                    mEffect.get(i).setParameter("contrast",filters.get(i).getParams().get(0));
+                    break;
+                case "cp":
+                    mEffect.add(effectFactory.createEffect(
+                            EffectFactory.EFFECT_CROSSPROCESS));
+                    break;
+                case "dt":
+                    mEffect.add(effectFactory.createEffect(
+                            EffectFactory.EFFECT_DOCUMENTARY));
                     break;
                 default:
                     break;
@@ -326,11 +334,7 @@ public class GLRenderer implements Renderer {
            // endregion*/
 
     private void applyEffect() {
-       /* for (Effect effect : mEffect) {
-            effect.apply(texture[0], mImageWidth, mImageHeight, texture[1]);
-        }*/
         int mEffectCount = mEffect.size();
-
         if (mEffectCount > 0) {
             mEffect.get(0).apply(texture[0], mImageWidth, mImageHeight, texture[1]);
             for (int i = 1; i < mEffectCount; i++) {
@@ -341,7 +345,6 @@ public class GLRenderer implements Renderer {
                 texture[2] = sourceTexture;
             }
         }
-
         mEffect.clear();
     }
 }

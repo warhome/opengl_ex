@@ -36,8 +36,4 @@ public class FileUtils {
         }
         return stringBuilder.toString();
     }
-
-    public static float convertPixelsToDp(float px, Context context){
-        return px / ((float) context.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
-    }
 }
