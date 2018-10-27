@@ -7,4 +7,9 @@
     <string name="opengl_ex">opengl_ex</string>
     <string name="gamma">Gamma</string>
     <string name="anotherfilter">AnotherFilter</string>
+    <string name="pick_option" >Open from</string>
+    <string-array name="Options">
+        <item>camera</item>
+        <item>gallery</item>
+    </string-array>
 </resources>

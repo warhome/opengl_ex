@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.pm.ConfigurationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,49 +21,39 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
-
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import io.reactivex.Observer;
-import io.reactivex.Scheduler;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener,
+        Switch.OnCheckedChangeListener,
+        OpenImageDialogFragment.OpenImageDialogCommunicator {
 
-public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener, Switch.OnCheckedChangeListener{
-
-    // TODO: Заблокировать orientation(?)
     // Requests
     private static final int PERMISSION_REQUEST = 1111;
     private static final int CAMERA_REQUEST = 4321;
     private static final int GALLERY_REQUEST = 1234;
+    private static final String SHOW_DIALOG_TAG = "OPEN_IMAGE";
 
-    // gl
+    // OpenGl
     private boolean rendererSet = false;
     private boolean isGlSurfaceViewSet = false;
-    GLRenderer glRenderer;
-    GLSurfaceView glSurfaceView;
-
+    private GLRenderer glRenderer;
+    private GLSurfaceView glSurfaceView;
     private List<Filter> filters = new ArrayList<>();
-    FilterHelper filterHelper = new FilterHelper();
+    private FilterHelper filterHelper = new FilterHelper();
+    private Bitmap in_image;
+    private RelativeLayout rl;
 
-    Bitmap in_image;
-    RelativeLayout rl;
-    Switch autofix;
-    Switch cross;
-    Switch documentary;
-    Switch negative;
-
-    SeekBar bright;
-    SeekBar contrast;
+    OpenImageDialogFragment mOpenImageDialogFragment;
+    private ScrollView scrollView;
 
     @SuppressLint("CheckResult")
     @Override
@@ -83,18 +72,25 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
         // Open file from gallery
         Button b = toolbar.findViewById(R.id.button);
-        b.setOnClickListener(view -> openImage());
+        b.setOnClickListener(view -> {
+            mOpenImageDialogFragment = new OpenImageDialogFragment();
+            mOpenImageDialogFragment.show(getFragmentManager(), SHOW_DIALOG_TAG);
+        });
 
         // Layout for GLSurfaceView
         rl = findViewById(R.id.gl_layout);
 
+        // ScrollView
+        scrollView = findViewById(R.id.scrollView);
+
         // Filters
-        autofix = findViewById(R.id.autofixSwitch);
-        bright = findViewById(R.id.seekBarBright);
-        contrast = findViewById(R.id.seekBarContrast);
-        cross = findViewById(R.id.crossprocessSwitch);
-        documentary = findViewById(R.id.documentarySwitch);
-        negative = findViewById(R.id.negativeSwitch);
+        Switch autofix = findViewById(R.id.autofixSwitch);
+        SeekBar bright = findViewById(R.id.seekBarBright);
+        SeekBar contrast = findViewById(R.id.seekBarContrast);
+        Switch cross = findViewById(R.id.crossprocessSwitch);
+        Switch documentary = findViewById(R.id.documentarySwitch);
+        Switch negative = findViewById(R.id.negativeSwitch);
+
 
         bright.setOnSeekBarChangeListener(this);
         contrast.setOnSeekBarChangeListener(this);
@@ -103,7 +99,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         documentary.setOnCheckedChangeListener(this);
         negative.setOnCheckedChangeListener(this);
     }
-
 
     void openCamera (){
         // Check camera permissions
@@ -124,31 +119,24 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
     }
 
-
-    // TODO: Переписать этот метод
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == Activity.RESULT_OK) {
-
-            if(in_image != null) in_image.recycle();
-
+            in_image.recycle();
             switch (requestCode) {
                 case GALLERY_REQUEST:
-                    Uri selectedImage = data.getData();
                     try {
-                        in_image = (MediaStore.Images.Media.getBitmap(getContentResolver(), selectedImage));
-                        createGLSurfaceView();
-                        glSurfaceView.requestRender();
-
+                        in_image = (MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData()));
                     } catch (IOException e) {
                         Log.i("TAG", "Some exception " + e);
                     }
                     break;
                 case CAMERA_REQUEST:
                     in_image = ((Bitmap) Objects.requireNonNull(data.getExtras()).get("data"));
-                    createGLSurfaceView();
             }
+            scrollView.setVisibility(View.VISIBLE);
+            createGLSurfaceView();
         }
     }
 
@@ -210,8 +198,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             glRenderer.setFilters(filters);
             glSurfaceView.requestRender();
         });
-       // glRenderer.setFilters(filters);
-       // glSurfaceView.requestRender();
     }
 
     @Override
@@ -256,5 +242,19 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             glRenderer.setFilters(filters);
             glSurfaceView.requestRender();
         });
+    }
+
+    @Override
+    public void onUpdateOption(int which, String tag) {
+        switch (which) {
+            case 0:
+                openCamera();
+                break;
+            case 1:
+                openImage();
+                break;
+            default:
+                break;
+        }
     }
 }

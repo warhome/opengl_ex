@@ -67,7 +67,6 @@ public class GLRenderer implements Renderer {
 
     List<Filter> filters = new ArrayList<>();
 
-
     private EffectContext mEffectContext;
     private List<Effect> mEffect = new ArrayList<>();
 
@@ -85,17 +84,10 @@ public class GLRenderer implements Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 arg0, EGLConfig arg1) {
-        /*glClearColor(0f, 0f, 0f, 1f);
-        glEnable(GL_DEPTH_TEST);
-
-        mEffectContext = EffectContext.createWithCurrentGlContext();*/
-
         createAndUseProgram(R.raw.texture_vertex_shader, R.raw.texture_fragment_shader);
         getLocations();
         prepareData();
         bindData();
-        /*initEffect();
-        applyEffect();*/
     }
 
     @Override
@@ -155,30 +147,20 @@ public class GLRenderer implements Renderer {
 
     @Override
     public void onDrawFrame(GL10 arg0) {
-            if(isDraw) {
-                // onSurfaceCreated methods
-                glClearColor(0f, 0f, 0f, 1f);
-                glEnable(GL_DEPTH_TEST);
+        glClearColor(0f, 0f, 0f, 1f);
+        glEnable(GL_DEPTH_TEST);
 
-                mEffectContext = EffectContext.createWithCurrentGlContext();
+        mEffectContext = EffectContext.createWithCurrentGlContext();
 
-                /*createAndUseProgram(R.raw.texture_vertex_shader, R.raw.texture_fragment_shader);
-                getLocations();
-                prepareData();
-                bindData();*/
-                initEffect();
-                applyEffect();
+        initEffect();
+        applyEffect();
 
-                // onSurfaceChanged methods
-                glViewport(0, 0, width, height);
+        glViewport(0, 0, width, height);
 
-                // onDrawFrame methods
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, texture[1]);
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-                glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-            }
-            else isDraw = true;
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture[1]);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }
 
     private void initEffect() {
