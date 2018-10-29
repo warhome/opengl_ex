@@ -9,30 +9,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class FileUtils {
+class FileUtils {
 
-    public static String readTextFromRaw(Context context, int resourceId) {
+    static String readTextFromRaw(Context context, int resourceId) {
         StringBuilder stringBuilder = new StringBuilder();
         try {
-            BufferedReader bufferedReader = null;
-            try {
-                InputStream inputStream =
-                        context.getResources().openRawResource(resourceId);
-                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            InputStream inputStream =
+                    context.getResources().openRawResource(resourceId);
+            try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
                 String line;
                 while ((line = bufferedReader.readLine()) != null) {
                     stringBuilder.append(line);
                     stringBuilder.append("\r\n");
                 }
-            } finally {
-                if (bufferedReader != null) {
-                    bufferedReader.close();
-                }
             }
-        } catch (IOException ioex) {
+        } catch (IOException | Resources.NotFoundException ioex) {
             ioex.printStackTrace();
-        } catch (Resources.NotFoundException nfex) {
-            nfex.printStackTrace();
         }
         return stringBuilder.toString();
     }

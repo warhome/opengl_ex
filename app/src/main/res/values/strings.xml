@@ -8,6 +8,7 @@
     <string name="gamma">Gamma</string>
     <string name="anotherfilter">AnotherFilter</string>
     <string name="pick_option" >Open from</string>
+    <string name="temperature">Temperature</string>
     <string-array name="Options">
         <item>camera</item>
         <item>gallery</item>

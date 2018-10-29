@@ -29,6 +29,7 @@ import android.support.v7.widget.Toolbar;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Dictionary;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,8 +53,12 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private Bitmap in_image;
     private RelativeLayout rl;
 
+    SeekBar black;
+    SeekBar white;
+
     OpenImageDialogFragment mOpenImageDialogFragment;
     private ScrollView scrollView;
+    private Dictionary<Integer, String> c;
 
     @SuppressLint("CheckResult")
     @Override
@@ -87,17 +92,37 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         Switch autofix = findViewById(R.id.autofixSwitch);
         SeekBar bright = findViewById(R.id.seekBarBright);
         SeekBar contrast = findViewById(R.id.seekBarContrast);
+        SeekBar fillight = findViewById(R.id.seekBarFilllight);
+        SeekBar fishEye = findViewById(R.id.seekBarFishEye);
+        SeekBar temperature = findViewById(R.id.seekBarTemperature);
+        black = findViewById(R.id.seekBarBlack);
+        white = findViewById(R.id.seekBarWhite);
+
         Switch cross = findViewById(R.id.crossprocessSwitch);
         Switch documentary = findViewById(R.id.documentarySwitch);
         Switch negative = findViewById(R.id.negativeSwitch);
-
+        Switch blackWhite = findViewById(R.id.BlackWhiteSwitch);
+        Switch posterize = findViewById(R.id.posterizeSwitch);
+        Switch sepia = findViewById(R.id.sepiaSwitch);
+        Switch gray = findViewById(R.id.grayscaleSwitch);
 
         bright.setOnSeekBarChangeListener(this);
         contrast.setOnSeekBarChangeListener(this);
+        fillight.setOnSeekBarChangeListener(this);
+        fishEye.setOnSeekBarChangeListener(this);
+        black.setOnSeekBarChangeListener(this);
+        white.setOnSeekBarChangeListener(this);
+        temperature.setOnSeekBarChangeListener(this);
+
         autofix.setOnCheckedChangeListener(this);
         cross.setOnCheckedChangeListener(this);
         documentary.setOnCheckedChangeListener(this);
         negative.setOnCheckedChangeListener(this);
+        blackWhite.setOnCheckedChangeListener(this);
+        sepia.setOnCheckedChangeListener(this);
+        gray.setOnCheckedChangeListener(this);
+        posterize.setOnCheckedChangeListener(this);
+
     }
 
     void openCamera (){
@@ -123,7 +148,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == Activity.RESULT_OK) {
-            in_image.recycle();
             switch (requestCode) {
                 case GALLERY_REQUEST:
                     try {
@@ -186,13 +210,60 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         switch (seekBar.getId()) {
             case R.id.seekBarBright:
-                if(filterHelper.isContains(filters, "br")) filterHelper.deleteElement(filters, "br");
-                if(progress != 50) filters.add(new Filter("br", (float)progress / 50f));
+                if(filterHelper.isContains(filters, "br")) {
+                    List<Float> params = new ArrayList<>();
+                    params.add((float)progress / 50f);
+                    filterHelper.findFilterId(filters,"br").setParams(params);
+                }
+                else filters.add(new Filter("br",(float)progress / 50f));
                 break;
             case R.id.seekBarContrast:
-                if(filterHelper.isContains(filters, "ct")) filterHelper.deleteElement(filters, "ct");
-                if(progress != 50) filters.add(new Filter("ct", (float)progress / 50f));
+                if(filterHelper.isContains(filters, "ct")) {
+                    List<Float> params = new ArrayList<>();
+                    params.add((float)progress / 50f);
+                    filterHelper.findFilterId(filters,"ct").setParams(params);
+                }
+                else filters.add(new Filter("ct",(float)progress / 50f));
                 break;
+            case R.id.seekBarFilllight:
+                if(filterHelper.isContains(filters, "fl")) {
+                    List<Float> params = new ArrayList<>();
+                    params.add((float)progress / 50f);
+                    filterHelper.findFilterId(filters,"fl").setParams(params);
+                }
+                else filters.add(new Filter("fl",(float)progress / 50f));
+                break;
+
+            case R.id.seekBarFishEye:
+                if(filterHelper.isContains(filters, "fe")) {
+                    List<Float> params = new ArrayList<>();
+                    params.add((float)progress / 50f);
+                    filterHelper.findFilterId(filters,"fe").setParams(params);
+                }
+                else filters.add(new Filter("fe",(float)progress / 50f));
+                break;
+
+            case R.id.seekBarBlack:
+                if(filterHelper.isContains(filters, "bw")) {
+                    filterHelper.findFilterId(filters,"bw").params.set(0, (float)progress / 50f);
+                }
+                break;
+
+            case R.id.seekBarWhite:
+                if(filterHelper.isContains(filters, "bw")) {
+                    filterHelper.findFilterId(filters,"bw").params.set(1, (float)progress / 50f);
+                }
+                break;
+
+            case R.id.seekBarTemperature:
+                if(filterHelper.isContains(filters, "tr")) {
+                    List<Float> params = new ArrayList<>();
+                    params.add((float)progress / 50f);
+                    filterHelper.findFilterId(filters,"tr").setParams(params);
+                }
+                else filters.add(new Filter("tr",(float)progress / 50f));
+                break;
+
         }
         glSurfaceView.queueEvent(() -> {
             glRenderer.setFilters(filters);
@@ -235,6 +306,33 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                     filters.add(new Filter("ng"));
                 else
                     filterHelper.deleteElement(filters, "ng");
+            break;
+            case R.id.sepiaSwitch:
+                if (isChecked)
+                    filters.add(new Filter("sa"));
+                else
+                    filterHelper.deleteElement(filters, "sa");
+                break;
+            case R.id.grayscaleSwitch:
+                if (isChecked)
+                    filters.add(new Filter("gs"));
+                else
+                    filterHelper.deleteElement(filters, "gs");
+                break;
+            case R.id.posterizeSwitch:
+                if (isChecked)
+                    filters.add(new Filter("pr"));
+                else
+                    filterHelper.deleteElement(filters, "pr");
+                break;
+            case R.id.BlackWhiteSwitch:
+                if (isChecked) {
+                    filters.add(new Filter("bw"));
+                    filterHelper.findFilterId(filters, "bw").params.set(0, (float) black.getProgress() / 50f);
+                    filterHelper.findFilterId(filters, "bw").params.set(0, (float) white.getProgress() / 50f);
+                }
+                else
+                    filterHelper.deleteElement(filters, "bw");
             break;
         }
 

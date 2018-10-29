@@ -63,14 +63,12 @@ public class GLRenderer implements Renderer {
     private int width;
     private int height;
 
-    private boolean isDraw = false;
+    private List<Filter> filters = new ArrayList<>();
 
-    List<Filter> filters = new ArrayList<>();
-
-    private EffectContext mEffectContext;
+    private EffectFactory effectFactory;
     private List<Effect> mEffect = new ArrayList<>();
 
-    public void setFilters(List<Filter> filters) {
+    void setFilters(List<Filter> filters) {
         this.filters = filters;
     }
 
@@ -88,6 +86,11 @@ public class GLRenderer implements Renderer {
         getLocations();
         prepareData();
         bindData();
+
+        EffectContext mEffectContext = EffectContext.createWithCurrentGlContext();
+        effectFactory = mEffectContext.getFactory();
+
+        bitmap.recycle();
     }
 
     @Override
@@ -150,8 +153,6 @@ public class GLRenderer implements Renderer {
         glClearColor(0f, 0f, 0f, 1f);
         glEnable(GL_DEPTH_TEST);
 
-        mEffectContext = EffectContext.createWithCurrentGlContext();
-
         initEffect();
         applyEffect();
 
@@ -164,7 +165,6 @@ public class GLRenderer implements Renderer {
     }
 
     private void initEffect() {
-        EffectFactory effectFactory = mEffectContext.getFactory();
         for (int i = 0; i < filters.size(); i++) {
            /* if (mEffect == null) {
                 mEffect.get(i).release();
@@ -213,6 +213,33 @@ public class GLRenderer implements Renderer {
                     mEffect.add(effectFactory.createEffect(
                             EffectFactory.EFFECT_DOCUMENTARY));
                     break;
+                case "fl":
+                    mEffect.add(effectFactory.createEffect(
+                            EffectFactory.EFFECT_FILLLIGHT));
+                    mEffect.get(i).setParameter("strength",filters.get(i).getParams().get(0));
+                    break;
+                case "fe":
+                    mEffect.add(effectFactory.createEffect(
+                            EffectFactory.EFFECT_FISHEYE));
+                    mEffect.get(i).setParameter("scale",filters.get(i).getParams().get(0));
+                    break;
+                case "gs":
+                    mEffect.add(effectFactory.createEffect(
+                            EffectFactory.EFFECT_GRAYSCALE));
+                    break;
+                case "pr":
+                    mEffect.add(effectFactory.createEffect(
+                            EffectFactory.EFFECT_POSTERIZE));
+                    break;
+                case "sa":
+                    mEffect.add(effectFactory.createEffect(
+                            EffectFactory.EFFECT_SEPIA));
+                    break;
+                case "tr":
+                    mEffect.add(effectFactory.createEffect(
+                            EffectFactory.EFFECT_TEMPERATURE));
+                    mEffect.get(i).setParameter("scale", filters.get(i).getParams().get(0));
+                    break;
                 default:
                     break;
             }
@@ -224,34 +251,11 @@ public class GLRenderer implements Renderer {
         mEffect.get(mEffect.size() - 1).setParameter("vertical", true);
     }
                 /*// region
-            case R.id.contrast:
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_CONTRAST);
-                mEffect.setParameter("contrast", 1.4f);
-                break;
-            case R.id.crossprocess:
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_CROSSPROCESS);
-                break;
-            case R.id.documentary:
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_DOCUMENTARY);
-                break;
             case R.id.duotone:
                 mEffect = effectFactory.createEffect(
                         EffectFactory.EFFECT_DUOTONE);
                 mEffect.setParameter("first_color", Color.YELLOW);
                 mEffect.setParameter("second_color", Color.DKGRAY);
-                break;
-            case R.id.filllight:
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_FILLLIGHT);
-                mEffect.setParameter("strength", .8f);
-                break;
-            case R.id.fisheye:
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_FISHEYE);
-                mEffect.setParameter("scale", .5f);
                 break;
             case R.id.flipvert:
                 mEffect = effectFactory.createEffect(
@@ -268,18 +272,12 @@ public class GLRenderer implements Renderer {
                         EffectFactory.EFFECT_GRAIN);
                 mEffect.setParameter("strength", 1.0f);
                 break;
-            case R.id.grayscale:
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_GRAYSCALE);
-                break;
+
             case R.id.lomoish:
                 mEffect = effectFactory.createEffect(
                         EffectFactory.EFFECT_LOMOISH);
                 break;
-            case R.id.posterize:
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_POSTERIZE);
-                break;
+
             case R.id.rotate:
                 mEffect = effectFactory.createEffect(
                         EffectFactory.EFFECT_ROTATE);
@@ -290,18 +288,9 @@ public class GLRenderer implements Renderer {
                         EffectFactory.EFFECT_SATURATE);
                 mEffect.setParameter("scale", .5f);
                 break;
-            case R.id.sepia:
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_SEPIA);
-                break;
             case R.id.sharpen:
                 mEffect = effectFactory.createEffect(
                         EffectFactory.EFFECT_SHARPEN);
-                break;
-            case R.id.temperature:
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_TEMPERATURE);
-                mEffect.setParameter("scale", .9f);
                 break;
             case R.id.tint:
                 mEffect = effectFactory.createEffect(

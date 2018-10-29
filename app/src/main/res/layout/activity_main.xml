@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
@@ -12,12 +13,11 @@
     <RelativeLayout
         android:id="@+id/gl_layout"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="380dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/tool_bar">
+
     </RelativeLayout>
 
     <ScrollView
@@ -42,7 +42,7 @@
                 android:textColor="@color/colorPrimary"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_marginStart="62dp"
+                android:layout_marginStart="40dp"
                 android:layout_alignParentStart="true"
                 android:layout_marginTop="40dp"/>
 
@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignEnd="@id/autofixTextView"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="62dp"
+                android:layout_marginEnd="40dp"
                 android:shadowColor="@color/colorPrimary"
                 android:textColor="@color/colorPrimary"
                 android:layout_marginTop="40dp"/>
@@ -63,7 +63,7 @@
                 android:textColor="@color/colorPrimary"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_marginStart="62dp"
+                android:layout_marginStart="40dp"
                 android:layout_alignParentStart="true"
                 android:layout_below="@id/autofixTextView"
                 android:layout_marginTop="22dp"/>
@@ -75,8 +75,31 @@
                 android:layout_below="@id/brightTextView"
                 android:layout_centerHorizontal="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="62dp"
-                android:layout_marginStart="62dp"
+                android:layout_marginEnd="40dp"
+                android:layout_marginStart="40dp"
+                android:progress="50"
+                android:max="100"/>
+            <TextView
+                android:id="@+id/temperatureTextView"
+                android:text="@string/temperature"
+                android:textSize="18sp"
+                android:textColor="@color/colorPrimary"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/brightTextView"
+                android:layout_marginTop="22dp"/>
+
+            <SeekBar
+                android:id="@+id/seekBarTemperature"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/temperatureTextView"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="40dp"
+                android:layout_marginStart="40dp"
                 android:progress="50"
                 android:max="100"/>
             <TextView
@@ -86,9 +109,9 @@
                 android:textColor="@color/colorPrimary"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_marginStart="62dp"
+                android:layout_marginStart="40dp"
                 android:layout_alignParentStart="true"
-                android:layout_below="@id/brightTextView"
+                android:layout_below="@id/temperatureTextView"
                 android:layout_marginTop="22dp"/>
 
             <SeekBar
@@ -98,56 +121,103 @@
                 android:layout_below="@id/ContrastTextView"
                 android:layout_centerHorizontal="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="62dp"
-                android:layout_marginStart="62dp"
+                android:layout_marginEnd="40dp"
+                android:layout_marginStart="40dp"
                 android:progress="50"
                 android:max="100"/>
             <TextView
-                android:id="@+id/AnotherTextView"
-                android:text="@string/anotherfilter"
+                android:id="@+id/FilllightTextView"
+                android:text="Fillight"
                 android:textSize="18sp"
                 android:textColor="@color/colorPrimary"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_marginStart="62dp"
+                android:layout_marginStart="40dp"
                 android:layout_alignParentStart="true"
                 android:layout_below="@id/ContrastTextView"
                 android:layout_marginTop="22dp"/>
 
             <SeekBar
-                android:id="@+id/seekBarAnother"
+                android:id="@+id/seekBarFilllight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/AnotherTextView"
+                android:layout_below="@id/FilllightTextView"
                 android:layout_centerHorizontal="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="62dp"
-                android:layout_marginStart="62dp"
-                android:progress="1"
+                android:layout_marginEnd="40dp"
+                android:layout_marginStart="40dp"
+                android:progress="50"
                 android:max="100"/>
             <TextView
-                android:id="@+id/Another2TextView"
-                android:text="@string/anotherfilter"
+                android:id="@+id/FisheyeTextView"
+                android:text="Fisheye"
                 android:textSize="18sp"
                 android:textColor="@color/colorPrimary"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_marginStart="62dp"
+                android:layout_marginStart="40dp"
                 android:layout_alignParentStart="true"
-                android:layout_below="@id/AnotherTextView"
+                android:layout_below="@id/FilllightTextView"
                 android:layout_marginTop="22dp"/>
 
             <SeekBar
-                android:id="@+id/seekBar2Another"
+                android:id="@+id/seekBarFishEye"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/Another2TextView"
+                android:layout_below="@id/FisheyeTextView"
                 android:layout_centerHorizontal="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="62dp"
-                android:layout_marginStart="62dp"
-                android:progress="1"
+                android:layout_marginEnd="40dp"
+                android:layout_marginStart="40dp"
+                android:progress="50"
                 android:max="100"/>
+
+            <TextView
+                android:id="@+id/BlackWhiteTextView"
+                android:text="Black/White"
+                android:textSize="18sp"
+                android:textColor="@color/colorPrimary"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/seekBarFishEye"
+                android:layout_marginTop="22dp"/>
+            <Switch
+                android:id="@+id/BlackWhiteSwitch"
+                android:layout_width="55dp"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@id/BlackWhiteTextView"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="40dp"
+                android:shadowColor="@color/colorPrimary"
+                android:textColor="@color/colorPrimary"
+                android:layout_marginTop="20dp"
+                android:layout_below="@id/FisheyeTextView"
+                />
+            <SeekBar
+                android:id="@+id/seekBarBlack"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/BlackWhiteTextView"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="40dp"
+                android:layout_marginStart="40dp"
+                android:progress="50"
+                android:max="100"/>
+            <SeekBar
+                android:id="@+id/seekBarWhite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/seekBarBlack"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="40dp"
+                android:layout_marginStart="40dp"
+                android:progress="50"
+                android:max="100"/>
+
             <TextView
                 android:id="@+id/crossprocessTextView"
                 android:text="Crossprocess"
@@ -155,10 +225,10 @@
                 android:textColor="@color/colorPrimary"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_marginStart="62dp"
+                android:layout_marginStart="40dp"
                 android:layout_alignParentStart="true"
                 android:layout_marginTop="20dp"
-                android:layout_below="@id/Another2TextView"/>
+                android:layout_below="@id/seekBarWhite"/>
 
             <Switch
                 android:id="@+id/crossprocessSwitch"
@@ -166,11 +236,11 @@
                 android:layout_height="wrap_content"
                 android:layout_alignEnd="@id/crossprocessTextView"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="62dp"
+                android:layout_marginEnd="40dp"
                 android:shadowColor="@color/colorPrimary"
                 android:textColor="@color/colorPrimary"
                 android:layout_marginTop="20dp"
-                android:layout_below="@id/Another2TextView"
+                android:layout_below="@id/seekBarWhite"
                 />
             <TextView
                 android:id="@+id/documentaryTextView"
@@ -179,7 +249,7 @@
                 android:textColor="@color/colorPrimary"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_marginStart="62dp"
+                android:layout_marginStart="40dp"
                 android:layout_alignParentStart="true"
                 android:layout_marginTop="20dp"
                 android:layout_below="@id/crossprocessTextView"/>
@@ -190,7 +260,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignEnd="@id/documentaryTextView"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="62dp"
+                android:layout_marginEnd="40dp"
                 android:shadowColor="@color/colorPrimary"
                 android:textColor="@color/colorPrimary"
                 android:layout_marginTop="20dp"
@@ -202,7 +272,7 @@
                 android:textColor="@color/colorPrimary"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:layout_marginStart="62dp"
+                android:layout_marginStart="40dp"
                 android:layout_alignParentStart="true"
                 android:layout_marginTop="20dp"
                 android:layout_below="@id/documentaryTextView"/>
@@ -213,11 +283,85 @@
                 android:layout_height="wrap_content"
                 android:layout_alignEnd="@id/negativeTextView"
                 android:layout_alignParentEnd="true"
-                android:layout_marginEnd="62dp"
+                android:layout_marginEnd="40dp"
                 android:shadowColor="@color/colorPrimary"
                 android:textColor="@color/colorPrimary"
                 android:layout_marginTop="20dp"
                 android:layout_below="@id/documentaryTextView"/>
+
+            <TextView
+                android:id="@+id/grayscaleTextView"
+                android:text="Grayscale"
+                android:textSize="18sp"
+                android:textColor="@color/colorPrimary"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="20dp"
+                android:layout_below="@id/negativeTextView"/>
+
+            <Switch
+                android:id="@+id/grayscaleSwitch"
+                android:layout_width="55dp"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@id/grayscaleTextView"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="40dp"
+                android:shadowColor="@color/colorPrimary"
+                android:textColor="@color/colorPrimary"
+                android:layout_marginTop="20dp"
+                android:layout_below="@id/negativeTextView"/>
+
+
+            <TextView
+                android:id="@+id/posterizeTextView"
+                android:text="Posterize"
+                android:textSize="18sp"
+                android:textColor="@color/colorPrimary"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="20dp"
+                android:layout_below="@id/grayscaleTextView"/>
+
+            <Switch
+                android:id="@+id/posterizeSwitch"
+                android:layout_width="55dp"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@id/posterizeTextView"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="40dp"
+                android:shadowColor="@color/colorPrimary"
+                android:textColor="@color/colorPrimary"
+                android:layout_marginTop="20dp"
+                android:layout_below="@id/grayscaleTextView"/>
+
+            <TextView
+                android:id="@+id/sepiaTextView"
+                android:text="Sepia"
+                android:textSize="18sp"
+                android:textColor="@color/colorPrimary"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="20dp"
+                android:layout_below="@id/posterizeSwitch"/>
+
+            <Switch
+                android:id="@+id/sepiaSwitch"
+                android:layout_width="55dp"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@id/sepiaTextView"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="40dp"
+                android:shadowColor="@color/colorPrimary"
+                android:textColor="@color/colorPrimary"
+                android:layout_marginTop="20dp"
+                android:layout_below="@id/posterizeSwitch"/>
+
         </RelativeLayout>
     </ScrollView>
 
