@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">opengl_ex</string>
+    <string name="app_name">hueapp</string>
     <string name="autofix">Autofix</string>
     <string name="negative">NEGATIVE</string>
     <string name="brightness">Brightness</string>
     <string name="open">OPEN</string>
-    <string name="opengl_ex">opengl_ex</string>
+    <string name="opengl_ex">Hue</string>
     <string name="gamma">Gamma</string>
     <string name="anotherfilter">AnotherFilter</string>
     <string name="pick_option" >Open from</string>

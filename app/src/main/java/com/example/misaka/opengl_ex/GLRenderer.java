@@ -2,11 +2,13 @@ package com.example.misaka.opengl_ex;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.media.effect.Effect;
 import android.media.effect.EffectContext;
 import android.media.effect.EffectFactory;
 import android.opengl.GLSurfaceView.Renderer;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -34,6 +36,7 @@ import static android.opengl.GLES20.glEnable;
 import static android.opengl.GLES20.glEnableVertexAttribArray;
 import static android.opengl.GLES20.glGetAttribLocation;
 import static android.opengl.GLES20.glGetUniformLocation;
+import static android.opengl.GLES20.glReadPixels;
 import static android.opengl.GLES20.glUniform1i;
 import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES20.glVertexAttribPointer;
@@ -57,6 +60,7 @@ public class GLRenderer implements Renderer {
 
     private int[] texture = new int[2];
     private Bitmap bitmap;
+    private Bitmap outBitmap;
     private int mImageWidth;
     private int mImageHeight;
 
@@ -67,6 +71,7 @@ public class GLRenderer implements Renderer {
 
     private EffectFactory effectFactory;
     private List<Effect> mEffect = new ArrayList<>();
+    private boolean isFirstDraw = true;
 
     void setFilters(List<Filter> filters) {
         this.filters = filters;
@@ -162,13 +167,18 @@ public class GLRenderer implements Renderer {
         glBindTexture(GL_TEXTURE_2D, texture[1]);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        if (isFirstDraw) { isFirstDraw = false; }
+        else { outBitmap.recycle(); }
+
+        Buffer mPixelBuf = ByteBuffer.allocateDirect((this.width * this.height) * 4);
+        glReadPixels(0, 0, this.width, this.height, 6408, 5121, mPixelBuf);
+        outBitmap = Bitmap.createBitmap(this.width, this.height, Bitmap.Config.ARGB_8888);
+        outBitmap.copyPixelsFromBuffer(mPixelBuf);
     }
 
     private void initEffect() {
         for (int i = 0; i < filters.size(); i++) {
-           /* if (mEffect == null) {
-                mEffect.get(i).release();
-            }*/
             switch (filters.get(i).getName()) {
                 case "af":
                     mEffect.add(effectFactory.createEffect(
@@ -250,59 +260,6 @@ public class GLRenderer implements Renderer {
                 EffectFactory.EFFECT_FLIP));
         mEffect.get(mEffect.size() - 1).setParameter("vertical", true);
     }
-                /*// region
-            case R.id.duotone:
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_DUOTONE);
-                mEffect.setParameter("first_color", Color.YELLOW);
-                mEffect.setParameter("second_color", Color.DKGRAY);
-                break;
-            case R.id.flipvert:
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_FLIP);
-                mEffect.setParameter("vertical", true);
-                break;
-            case R.id.fliphor:
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_FLIP);
-                mEffect.setParameter("horizontal", true);
-                break;
-            case R.id.grain:
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_GRAIN);
-                mEffect.setParameter("strength", 1.0f);
-                break;
-
-            case R.id.lomoish:
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_LOMOISH);
-                break;
-
-            case R.id.rotate:
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_ROTATE);
-                mEffect.setParameter("angle", 180);
-                break;
-            case R.id.saturate:
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_SATURATE);
-                mEffect.setParameter("scale", .5f);
-                break;
-            case R.id.sharpen:
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_SHARPEN);
-                break;
-            case R.id.tint:
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_TINT);
-                mEffect.setParameter("tint", Color.MAGENTA);
-                break;
-            case R.id.vignette:
-                mEffect = effectFactory.createEffect(
-                        EffectFactory.EFFECT_VIGNETTE);
-                mEffect.setParameter("scale", .5f);
-                break;
-           // endregion*/
 
     private void applyEffect() {
         int mEffectCount = mEffect.size();
@@ -317,5 +274,12 @@ public class GLRenderer implements Renderer {
             }
         }
         mEffect.clear();
+    }
+
+    Bitmap getBmp() {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(180.0f);
+        matrix.preScale(-1.0f, 1.0f);
+        return Bitmap.createBitmap(outBitmap, 0, 0, outBitmap.getWidth(), outBitmap.getHeight(), matrix, true);
     }
 }

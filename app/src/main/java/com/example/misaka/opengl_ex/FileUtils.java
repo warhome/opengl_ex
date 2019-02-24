@@ -2,7 +2,6 @@ package com.example.misaka.opengl_ex;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.util.DisplayMetrics;
 
 import java.io.BufferedReader;
 import java.io.IOException;

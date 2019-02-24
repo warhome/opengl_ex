@@ -2,29 +2,36 @@
 <android.support.v7.widget.Toolbar
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorPrimaryDark"
-    android:elevation="4dp">
-
+    android:background="@color/colorPrimaryDark">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <TextView
+            android:id="@+id/app_name"
             android:layout_height="wrap_content"
             android:text="@string/opengl_ex"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/textColor"
             android:textSize="20sp"
-            android:layout_width="100dp"
+            android:layout_width="40dp"
             android:layout_centerVertical="true"/>
+        <ImageView
+            android:id="@+id/emoji_objec"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/app_name"
+            android:background="@drawable/emoji_object" />
+
         <Button
-            android:text="@string/open"
             android:id="@+id/button"
             android:layout_width="94dp"
-            android:layout_height="36dp"
+            android:layout_height="34dp"
             android:layout_alignParentEnd="true"
-            android:layout_marginEnd="18dp"
-            android:background="@color/colorPrimary"
             android:layout_centerVertical="true"
-            android:textColor="#FFFFFF"
-            />
+            android:layout_marginEnd="18dp"
+            android:background="@drawable/open_button_bg"
+            android:text="@string/open"
+            android:textColor="@color/textColor" />
     </RelativeLayout>
 </android.support.v7.widget.Toolbar>

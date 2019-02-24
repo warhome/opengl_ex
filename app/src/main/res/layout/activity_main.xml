@@ -6,19 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:background="@color/BackgroundColor">
-    <include android:id="@+id/tool_bar"
-        layout="@layout/tool_bar"/>
+    android:background="@color/colorPrimaryDark">
 
-    <RelativeLayout
-        android:id="@+id/gl_layout"
-        android:layout_width="match_parent"
-        android:layout_height="380dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        app:layout_constraintTop_toBottomOf="@id/tool_bar">
-
-    </RelativeLayout>
+    <include
+        android:id="@+id/tool_bar"
+        layout="@layout/tool_bar"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="0dp" />
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -30,6 +24,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/gl_layout"
         app:layout_constraintVertical_bias="0.0"
+        android:background="@color/BackgroundColor"
         android:visibility="invisible">
 
         <RelativeLayout
@@ -39,7 +34,7 @@
                 android:id="@+id/autofixTextView"
                 android:text="@string/autofix"
                 android:textSize="18sp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginStart="40dp"
@@ -53,14 +48,13 @@
                 android:layout_alignEnd="@id/autofixTextView"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="40dp"
-                android:shadowColor="@color/colorPrimary"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_marginTop="40dp"/>
             <TextView
                 android:id="@+id/brightTextView"
                 android:text="@string/brightness"
                 android:textSize="18sp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginStart="40dp"
@@ -83,7 +77,7 @@
                 android:id="@+id/temperatureTextView"
                 android:text="@string/temperature"
                 android:textSize="18sp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginStart="40dp"
@@ -106,7 +100,7 @@
                 android:id="@+id/ContrastTextView"
                 android:text="Contrast"
                 android:textSize="18sp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginStart="40dp"
@@ -129,7 +123,7 @@
                 android:id="@+id/FilllightTextView"
                 android:text="Fillight"
                 android:textSize="18sp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginStart="40dp"
@@ -152,7 +146,7 @@
                 android:id="@+id/FisheyeTextView"
                 android:text="Fisheye"
                 android:textSize="18sp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginStart="40dp"
@@ -176,7 +170,7 @@
                 android:id="@+id/BlackWhiteTextView"
                 android:text="Black/White"
                 android:textSize="18sp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginStart="40dp"
@@ -190,8 +184,7 @@
                 android:layout_alignEnd="@id/BlackWhiteTextView"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="40dp"
-                android:shadowColor="@color/colorPrimary"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_marginTop="20dp"
                 android:layout_below="@id/FisheyeTextView"
                 />
@@ -222,7 +215,7 @@
                 android:id="@+id/crossprocessTextView"
                 android:text="Crossprocess"
                 android:textSize="18sp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginStart="40dp"
@@ -237,8 +230,7 @@
                 android:layout_alignEnd="@id/crossprocessTextView"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="40dp"
-                android:shadowColor="@color/colorPrimary"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_marginTop="20dp"
                 android:layout_below="@id/seekBarWhite"
                 />
@@ -246,7 +238,7 @@
                 android:id="@+id/documentaryTextView"
                 android:text="Documentary"
                 android:textSize="18sp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginStart="40dp"
@@ -261,15 +253,14 @@
                 android:layout_alignEnd="@id/documentaryTextView"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="40dp"
-                android:shadowColor="@color/colorPrimary"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_marginTop="20dp"
                 android:layout_below="@id/crossprocessTextView"/>
             <TextView
                 android:id="@+id/negativeTextView"
                 android:text="Negative"
                 android:textSize="18sp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginStart="40dp"
@@ -284,8 +275,7 @@
                 android:layout_alignEnd="@id/negativeTextView"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="40dp"
-                android:shadowColor="@color/colorPrimary"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_marginTop="20dp"
                 android:layout_below="@id/documentaryTextView"/>
 
@@ -293,7 +283,7 @@
                 android:id="@+id/grayscaleTextView"
                 android:text="Grayscale"
                 android:textSize="18sp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginStart="40dp"
@@ -308,8 +298,7 @@
                 android:layout_alignEnd="@id/grayscaleTextView"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="40dp"
-                android:shadowColor="@color/colorPrimary"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_marginTop="20dp"
                 android:layout_below="@id/negativeTextView"/>
 
@@ -318,7 +307,7 @@
                 android:id="@+id/posterizeTextView"
                 android:text="Posterize"
                 android:textSize="18sp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginStart="40dp"
@@ -333,8 +322,7 @@
                 android:layout_alignEnd="@id/posterizeTextView"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="40dp"
-                android:shadowColor="@color/colorPrimary"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_marginTop="20dp"
                 android:layout_below="@id/grayscaleTextView"/>
 
@@ -342,7 +330,7 @@
                 android:id="@+id/sepiaTextView"
                 android:text="Sepia"
                 android:textSize="18sp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:layout_marginStart="40dp"
@@ -357,12 +345,47 @@
                 android:layout_alignEnd="@id/sepiaTextView"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="40dp"
-                android:shadowColor="@color/colorPrimary"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/textColor"
                 android:layout_marginTop="20dp"
                 android:layout_below="@id/posterizeSwitch"/>
 
         </RelativeLayout>
     </ScrollView>
+
+    <RelativeLayout
+        android:id="@+id/gl_layout"
+        android:layout_width="match_parent"
+        android:layout_height="380dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        app:layout_constraintTop_toBottomOf="@id/tool_bar">
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/chackmarkActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:clickable="true"
+            app:srcCompat="@drawable/checkmark"
+            android:focusable="true"
+            android:visibility="invisible"
+            app:backgroundTint="@color/colorPrimaryDark"/>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/shareActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="20dp"
+            android:clickable="true"
+            app:srcCompat="@drawable/share"
+            android:focusable="true"
+            android:visibility="invisible"
+            app:backgroundTint="@color/colorPrimaryDark"/>
+    </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

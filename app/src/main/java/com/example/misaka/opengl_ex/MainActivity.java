@@ -9,14 +9,18 @@ import android.content.Intent;
 import android.content.pm.ConfigurationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -27,24 +31,26 @@ import android.widget.Switch;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener,
         Switch.OnCheckedChangeListener,
-        OpenImageDialogFragment.OpenImageDialogCommunicator {
+        OpenImageDialogFragment.OpenImageDialogCommunicator, GLSurfaceView.OnTouchListener {
 
     // Requests
-    private static final int PERMISSION_REQUEST = 1111;
     private static final int CAMERA_REQUEST = 4321;
     private static final int GALLERY_REQUEST = 1234;
+    private static final int PERMISSION_REQUEST = 1111;
     private static final String SHOW_DIALOG_TAG = "OPEN_IMAGE";
 
     // OpenGl
-    private boolean rendererSet = false;
+    // private boolean rendererSet = false;
     private boolean isGlSurfaceViewSet = false;
     private GLRenderer glRenderer;
     private GLSurfaceView glSurfaceView;
@@ -58,7 +64,8 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
     OpenImageDialogFragment mOpenImageDialogFragment;
     private ScrollView scrollView;
-    private Dictionary<Integer, String> c;
+    private FloatingActionButton chackmarkButton;
+    private FloatingActionButton shareButton;
 
     @SuppressLint("CheckResult")
     @Override
@@ -66,27 +73,52 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (!isSupportES2()) {
-            Toast.makeText(this, "OpenGL ES 2.0 is not supported ):", Toast.LENGTH_LONG).show();
-            finish();
-        }
+        checkSupportES2();
 
         // Toolbar
         Toolbar toolbar = findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
 
-        // Open file from gallery
-        Button b = toolbar.findViewById(R.id.button);
-        b.setOnClickListener(view -> {
+        // Layout for GLSurfaceView
+        rl = findViewById(R.id.gl_layout);
+
+        // ScrollView (filters)
+        scrollView = findViewById(R.id.scrollView);
+
+        // Open file from gallery/camera
+        Button open = toolbar.findViewById(R.id.button);
+        open.setOnClickListener(view -> {
             mOpenImageDialogFragment = new OpenImageDialogFragment();
             mOpenImageDialogFragment.show(getFragmentManager(), SHOW_DIALOG_TAG);
         });
 
-        // Layout for GLSurfaceView
-        rl = findViewById(R.id.gl_layout);
+        // Save button
+        chackmarkButton = findViewById(R.id.chackmarkActionButton);
+        chackmarkButton.setOnClickListener(v -> {
+            if (ContextCompat.checkSelfPermission(this, "android.permission.WRITE_EXTERNAL_STORAGE") == 0) {
+                saveImage(glRenderer.getBmp());
+            } else if (!ActivityCompat.shouldShowRequestPermissionRationale(this, "android.permission.WRITE_EXTERNAL_STORAGE")) {
+                ActivityCompat.requestPermissions(this, new String[]{"android.permission.WRITE_EXTERNAL_STORAGE"}, PERMISSION_REQUEST);
+            }
+        });
 
-        // ScrollView
-        scrollView = findViewById(R.id.scrollView);
+        // Share button
+        shareButton = findViewById(R.id.shareActionButton);
+        shareButton.setOnClickListener(v -> {
+            if (ContextCompat.checkSelfPermission(this, "android.permission.WRITE_EXTERNAL_STORAGE") == 0) {
+                //saveImage(glRenderer.getBmp());
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+                shareIntent.setType("image/*");
+                String stringBuilder = Environment.getExternalStorageDirectory().getPath() +
+                        saveImage(glRenderer.getBmp());
+                shareIntent.putExtra("android.intent.extra.STREAM", Uri.parse(stringBuilder));
+                //shareIntent.setFlags(intent.);
+                startActivity(Intent.createChooser(shareIntent, "Share it"));
+            } else if (!ActivityCompat.shouldShowRequestPermissionRationale(this, "android.permission.WRITE_EXTERNAL_STORAGE")) {
+                ActivityCompat.requestPermissions(this, new String[]{"android.permission.WRITE_EXTERNAL_STORAGE"}, PERMISSION_REQUEST);
+            }
+        });
 
         // Filters
         Switch autofix = findViewById(R.id.autofixSwitch);
@@ -125,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
     }
 
-    void openCamera (){
+    void openCamera() {
         // Check camera permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
@@ -138,16 +170,35 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         }
     }
 
-    void openImage(){
+    void openImage() {
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
         photoPickerIntent.setType("image/*");
         startActivityForResult(photoPickerIntent, GALLERY_REQUEST);
     }
 
+    String saveImage(Bitmap finalBitmap) {
+        File mDir = new File(Environment.getExternalStorageDirectory().getPath());
+        mDir.mkdirs();
+        String fname = "Image-" + UUID.randomUUID() + ".jpg";
+        File file = new File(mDir, fname);
+        if (file.exists()) {
+            file.delete();
+        }
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            finalBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        }
+        return fname;
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case GALLERY_REQUEST:
                     try {
@@ -180,20 +231,22 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         // }
     }
 
-    private boolean isSupportES2() {
+    private void checkSupportES2() {
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         ConfigurationInfo configurationInfo = Objects.requireNonNull(activityManager).getDeviceConfigurationInfo();
-        return configurationInfo.reqGlEsVersion >= 0x20000
+        if(!(configurationInfo.reqGlEsVersion >= 0x20000
                 || Build.FINGERPRINT.startsWith("generic")
                 || Build.FINGERPRINT.startsWith("unknown")
                 || Build.MODEL.contains("google_sdk")
                 || Build.MODEL.contains("Emulator")
-                || Build.MODEL.contains("Android SDK built for x86");
+                || Build.MODEL.contains("Android SDK built for x86"))){
+            Toast.makeText(this, "OpenGL ES 2.0 is not supported ):", Toast.LENGTH_LONG).show();
+            finish();
+        }
     }
 
-
     private void createGLSurfaceView() {
-        if(isGlSurfaceViewSet) glSurfaceView.setVisibility(View.GONE);
+        if (isGlSurfaceViewSet) glSurfaceView.setVisibility(View.GONE);
         else isGlSurfaceViewSet = true;
 
         glSurfaceView = new GLSurfaceView(getApplicationContext());
@@ -202,66 +255,63 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         glRenderer.setBitmap(in_image);
         glSurfaceView.setRenderer(glRenderer);
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
-
+        glSurfaceView.setOnTouchListener(this);
         rl.addView(glSurfaceView);
+        chackmarkButton.show();
+        shareButton.show();
     }
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         switch (seekBar.getId()) {
             case R.id.seekBarBright:
-                if(filterHelper.isContains(filters, "br")) {
+                if (filterHelper.isContains(filters, "br")) {
                     List<Float> params = new ArrayList<>();
-                    params.add((float)progress / 50f);
-                    filterHelper.findFilterId(filters,"br").setParams(params);
-                }
-                else filters.add(new Filter("br",(float)progress / 50f));
+                    params.add((float) progress / 50f);
+                    filterHelper.findFilterId(filters, "br").setParams(params);
+                } else filters.add(new Filter("br", (float) progress / 50f));
                 break;
             case R.id.seekBarContrast:
-                if(filterHelper.isContains(filters, "ct")) {
+                if (filterHelper.isContains(filters, "ct")) {
                     List<Float> params = new ArrayList<>();
-                    params.add((float)progress / 50f);
-                    filterHelper.findFilterId(filters,"ct").setParams(params);
-                }
-                else filters.add(new Filter("ct",(float)progress / 50f));
+                    params.add((float) progress / 50f);
+                    filterHelper.findFilterId(filters, "ct").setParams(params);
+                } else filters.add(new Filter("ct", (float) progress / 50f));
                 break;
             case R.id.seekBarFilllight:
-                if(filterHelper.isContains(filters, "fl")) {
+                if (filterHelper.isContains(filters, "fl")) {
                     List<Float> params = new ArrayList<>();
-                    params.add((float)progress / 50f);
-                    filterHelper.findFilterId(filters,"fl").setParams(params);
-                }
-                else filters.add(new Filter("fl",(float)progress / 50f));
+                    params.add((float) progress / 50f);
+                    filterHelper.findFilterId(filters, "fl").setParams(params);
+                } else filters.add(new Filter("fl", (float) progress / 50f));
                 break;
 
             case R.id.seekBarFishEye:
-                if(filterHelper.isContains(filters, "fe")) {
+                if (filterHelper.isContains(filters, "fe")) {
                     List<Float> params = new ArrayList<>();
-                    params.add((float)progress / 50f);
-                    filterHelper.findFilterId(filters,"fe").setParams(params);
-                }
-                else filters.add(new Filter("fe",(float)progress / 50f));
+                    params.add((float) progress / 50f);
+                    filterHelper.findFilterId(filters, "fe").setParams(params);
+                } else filters.add(new Filter("fe", (float) progress / 50f));
                 break;
 
             case R.id.seekBarBlack:
-                if(filterHelper.isContains(filters, "bw")) {
-                    filterHelper.findFilterId(filters,"bw").params.set(0, (float)progress / 50f);
+                if (filterHelper.isContains(filters, "bw")) {
+                    filterHelper.findFilterId(filters, "bw").params.set(0, (float) progress / 50f);
                 }
                 break;
 
             case R.id.seekBarWhite:
-                if(filterHelper.isContains(filters, "bw")) {
-                    filterHelper.findFilterId(filters,"bw").params.set(1, (float)progress / 50f);
+                if (filterHelper.isContains(filters, "bw")) {
+                    filterHelper.findFilterId(filters, "bw").params.set(1, (float) progress / 50f);
                 }
                 break;
 
             case R.id.seekBarTemperature:
-                if(filterHelper.isContains(filters, "tr")) {
+                if (filterHelper.isContains(filters, "tr")) {
                     List<Float> params = new ArrayList<>();
-                    params.add((float)progress / 50f);
-                    filterHelper.findFilterId(filters,"tr").setParams(params);
-                }
-                else filters.add(new Filter("tr",(float)progress / 50f));
+                    params.add((float) progress / 50f);
+                    filterHelper.findFilterId(filters, "tr").setParams(params);
+                } else filters.add(new Filter("tr", (float) progress / 50f));
                 break;
 
         }
@@ -289,13 +339,13 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                     filters.add(new Filter("af"));
                 else
                     filterHelper.deleteElement(filters, "af");
-            break;
+                break;
             case R.id.crossprocessSwitch:
                 if (isChecked)
                     filters.add(new Filter("cp"));
                 else
                     filterHelper.deleteElement(filters, "cp");
-            break;
+                break;
             case R.id.documentarySwitch:
                 if (isChecked)
                     filters.add(new Filter("dt"));
@@ -306,7 +356,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                     filters.add(new Filter("ng"));
                 else
                     filterHelper.deleteElement(filters, "ng");
-            break;
+                break;
             case R.id.sepiaSwitch:
                 if (isChecked)
                     filters.add(new Filter("sa"));
@@ -330,10 +380,9 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                     filters.add(new Filter("bw"));
                     filterHelper.findFilterId(filters, "bw").params.set(0, (float) black.getProgress() / 50f);
                     filterHelper.findFilterId(filters, "bw").params.set(0, (float) white.getProgress() / 50f);
-                }
-                else
+                } else
                     filterHelper.deleteElement(filters, "bw");
-            break;
+                break;
         }
 
         glSurfaceView.queueEvent(() -> {
@@ -354,5 +403,26 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             default:
                 break;
         }
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        switch (event.getAction()) {
+            case 0:
+                this.glSurfaceView.queueEvent(() -> {
+                    glRenderer.setFilters(new ArrayList<>());
+                    glSurfaceView.requestRender();
+                });
+                break;
+            case 1:
+                this.glSurfaceView.queueEvent(() -> {
+                    glRenderer.setFilters(new ArrayList<>());
+                    glSurfaceView.requestRender();
+                });
+                break;
+            default:
+                break;
+        }
+        return true;
     }
 }
