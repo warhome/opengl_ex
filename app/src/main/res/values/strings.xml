@@ -1,14 +1,16 @@
 <resources>
-    <string name="app_name">hueapp</string>
+    <string name="app_name">huesapp</string>
     <string name="autofix">Autofix</string>
     <string name="negative">NEGATIVE</string>
     <string name="brightness">Brightness</string>
     <string name="open">OPEN</string>
-    <string name="opengl_ex">Hue</string>
+    <string name="opengl_ex">Hues</string>
     <string name="gamma">Gamma</string>
     <string name="anotherfilter">AnotherFilter</string>
     <string name="pick_option" >Open from</string>
     <string name="temperature">Temperature</string>
+    <string name="cancel_button">reset</string>
+    <string name="reset_btn">reset</string>
     <string-array name="Options">
         <item>camera</item>
         <item>gallery</item>

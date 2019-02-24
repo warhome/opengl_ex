@@ -24,6 +24,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
@@ -59,20 +60,35 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private Bitmap in_image;
     private RelativeLayout rl;
 
-    SeekBar black;
-    SeekBar white;
+    private Switch autofix;
+    private SeekBar bright;
+    private SeekBar contrast;
+    private SeekBar fillight;
+    private SeekBar fishEye;
+    private SeekBar temperature;
+    private Switch cross;
+    private Switch documentary;
+    private Switch negative;
+    private Switch blackWhite;
+    private Switch posterize;
+    private Switch sepia;
+    private Switch gray;
+    private SeekBar black;
+    private SeekBar white;
+    private Button resetButton;
 
     OpenImageDialogFragment mOpenImageDialogFragment;
     private ScrollView scrollView;
     private FloatingActionButton chackmarkButton;
     private FloatingActionButton shareButton;
+    private FloatingActionButton saveButton;
+    private boolean isFabMenuOpen = false;
 
     @SuppressLint("CheckResult")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         checkSupportES2();
 
         // Toolbar
@@ -85,16 +101,23 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         // ScrollView (filters)
         scrollView = findViewById(R.id.scrollView);
 
-        // Open file from gallery/camera
+        // Open file from gallery/camera (dialog)
         Button open = toolbar.findViewById(R.id.button);
         open.setOnClickListener(view -> {
             mOpenImageDialogFragment = new OpenImageDialogFragment();
             mOpenImageDialogFragment.show(getFragmentManager(), SHOW_DIALOG_TAG);
         });
 
-        // Save button
+        // Check button
         chackmarkButton = findViewById(R.id.chackmarkActionButton);
         chackmarkButton.setOnClickListener(v -> {
+            if(!isFabMenuOpen) { showFabMenu();}
+            else closeFabMenu();
+        });
+
+        // Save button
+        saveButton = findViewById(R.id.saveActionButton);
+        saveButton.setOnClickListener(v -> {
             if (ContextCompat.checkSelfPermission(this, "android.permission.WRITE_EXTERNAL_STORAGE") == 0) {
                 saveImage(glRenderer.getBmp());
             } else if (!ActivityCompat.shouldShowRequestPermissionRationale(this, "android.permission.WRITE_EXTERNAL_STORAGE")) {
@@ -106,37 +129,45 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         shareButton = findViewById(R.id.shareActionButton);
         shareButton.setOnClickListener(v -> {
             if (ContextCompat.checkSelfPermission(this, "android.permission.WRITE_EXTERNAL_STORAGE") == 0) {
-                //saveImage(glRenderer.getBmp());
+                String filename = saveImage(glRenderer.getBmp());
                 Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                shareIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
                 shareIntent.setType("image/*");
-                String stringBuilder = Environment.getExternalStorageDirectory().getPath() +
+                String stringBuilder = Environment.getExternalStorageDirectory().getPath() + "/" +
                         saveImage(glRenderer.getBmp());
                 shareIntent.putExtra("android.intent.extra.STREAM", Uri.parse(stringBuilder));
-                //shareIntent.setFlags(intent.);
                 startActivity(Intent.createChooser(shareIntent, "Share it"));
             } else if (!ActivityCompat.shouldShowRequestPermissionRationale(this, "android.permission.WRITE_EXTERNAL_STORAGE")) {
                 ActivityCompat.requestPermissions(this, new String[]{"android.permission.WRITE_EXTERNAL_STORAGE"}, PERMISSION_REQUEST);
             }
         });
 
+        // Reset button
+        resetButton = findViewById(R.id.reset_button);
+        resetButton.setOnClickListener(v -> {
+            resetFiltersUI();
+            glSurfaceView.queueEvent(() -> {
+                glRenderer.setFilters(new ArrayList<>());
+                glSurfaceView.requestRender();
+            });
+        });
+
         // Filters
-        Switch autofix = findViewById(R.id.autofixSwitch);
-        SeekBar bright = findViewById(R.id.seekBarBright);
-        SeekBar contrast = findViewById(R.id.seekBarContrast);
-        SeekBar fillight = findViewById(R.id.seekBarFilllight);
-        SeekBar fishEye = findViewById(R.id.seekBarFishEye);
-        SeekBar temperature = findViewById(R.id.seekBarTemperature);
+        autofix = findViewById(R.id.autofixSwitch);
+        bright = findViewById(R.id.seekBarBright);
+        contrast = findViewById(R.id.seekBarContrast);
+        fillight = findViewById(R.id.seekBarFilllight);
+        fishEye = findViewById(R.id.seekBarFishEye);
+        temperature = findViewById(R.id.seekBarTemperature);
         black = findViewById(R.id.seekBarBlack);
         white = findViewById(R.id.seekBarWhite);
 
-        Switch cross = findViewById(R.id.crossprocessSwitch);
-        Switch documentary = findViewById(R.id.documentarySwitch);
-        Switch negative = findViewById(R.id.negativeSwitch);
-        Switch blackWhite = findViewById(R.id.BlackWhiteSwitch);
-        Switch posterize = findViewById(R.id.posterizeSwitch);
-        Switch sepia = findViewById(R.id.sepiaSwitch);
-        Switch gray = findViewById(R.id.grayscaleSwitch);
+        cross = findViewById(R.id.crossprocessSwitch);
+        documentary = findViewById(R.id.documentarySwitch);
+        negative = findViewById(R.id.negativeSwitch);
+        blackWhite = findViewById(R.id.BlackWhiteSwitch);
+        posterize = findViewById(R.id.posterizeSwitch);
+        sepia = findViewById(R.id.sepiaSwitch);
+        gray = findViewById(R.id.grayscaleSwitch);
 
         bright.setOnSeekBarChangeListener(this);
         contrast.setOnSeekBarChangeListener(this);
@@ -154,7 +185,18 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         sepia.setOnCheckedChangeListener(this);
         gray.setOnCheckedChangeListener(this);
         posterize.setOnCheckedChangeListener(this);
+    }
 
+    private void closeFabMenu() {
+        isFabMenuOpen = false;
+        saveButton.animate().translationY(0);
+        shareButton.animate().translationY(0);
+    }
+
+    private void showFabMenu() {
+        isFabMenuOpen = true;
+        saveButton.animate().translationY(-getResources().getDimension(R.dimen.standard_60));
+        shareButton.animate().translationY(-getResources().getDimension(R.dimen.standard_120));
     }
 
     void openCamera() {
@@ -189,6 +231,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
             finalBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
             out.flush();
             out.close();
+            Toast.makeText(this, "Saved in " + Environment.getExternalStorageDirectory().getPath() + "/" + fname, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
@@ -211,7 +254,9 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                     in_image = ((Bitmap) Objects.requireNonNull(data.getExtras()).get("data"));
             }
             scrollView.setVisibility(View.VISIBLE);
+            resetButton.setVisibility(View.VISIBLE);
             createGLSurfaceView();
+            resetFiltersUI();
         }
     }
 
@@ -245,6 +290,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void createGLSurfaceView() {
         if (isGlSurfaceViewSet) glSurfaceView.setVisibility(View.GONE);
         else isGlSurfaceViewSet = true;
@@ -257,8 +303,11 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         glSurfaceView.setOnTouchListener(this);
         rl.addView(glSurfaceView);
+
         chackmarkButton.show();
         shareButton.show();
+        saveButton.show();
+        resetButton.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -405,6 +454,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         switch (event.getAction()) {
@@ -416,7 +466,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 break;
             case 1:
                 this.glSurfaceView.queueEvent(() -> {
-                    glRenderer.setFilters(new ArrayList<>());
+                    glRenderer.setFilters(filters);
                     glSurfaceView.requestRender();
                 });
                 break;
@@ -424,5 +474,24 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 break;
         }
         return true;
+    }
+
+    public void resetFiltersUI(){
+        bright.setProgress(50);
+        contrast.setProgress(50);
+        fillight.setProgress(50);
+        fishEye.setProgress(50);
+        temperature.setProgress(50);
+        autofix.setChecked(false);
+        black.setProgress(50);
+        white.setProgress(50);
+        cross.setChecked(false);
+        documentary.setChecked(false);
+        negative.setChecked(false);
+        blackWhite.setChecked(false);
+        sepia.setChecked(false);
+        gray.setChecked(false);
+        posterize.setChecked(false);
+        if(!filters.isEmpty()) filters = new ArrayList<>();
     }
 }
