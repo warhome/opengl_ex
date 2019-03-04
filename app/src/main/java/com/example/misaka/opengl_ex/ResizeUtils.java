@@ -29,15 +29,17 @@ public class ResizeUtils {
         float maximumH = displayH * 0.5f;
         float coeff;
 
-        if(imageHeight > imageWidth) coeff = imageHeight / imageWidth;
-        else coeff = imageWidth / imageHeight;
+//        if(imageHeight > imageWidth) coeff = imageHeight / imageWidth;
+//        else coeff = imageWidth / imageHeight;
+
+        coeff = imageHeight / imageWidth;
 
         float viewW = displayW;
         float viewH = coeff * displayW;
         if(viewH > maximumH){
             viewH = maximumH;
             if(imageHeight == imageWidth) viewW = viewH;
-            else viewW = viewW / coeff;
+            else viewW = viewH / coeff;
         }
 
         relativeLayout.getLayoutParams().width  = (int)viewW;
