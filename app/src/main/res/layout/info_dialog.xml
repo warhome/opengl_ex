@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.widget.RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark">
+
+    <TextView
+        android:id="@+id/height_label"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginBottom="9dp"
+        android:text="@string/height_label"
+        android:textSize="18sp"
+        android:textColor="@color/textColor"/>
+
+    <TextView
+        android:id="@+id/height_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginBottom="9dp"
+        android:layout_toEndOf="@id/height_label"
+        android:text=""
+        android:textSize="18sp"
+        android:textColor="@color/textColor"/>
+
+    <TextView
+        android:id="@+id/width_label"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/height_label"
+        android:layout_marginStart="18dp"
+        android:layout_marginBottom="9dp"
+        android:text="@string/width"
+        android:textSize="18sp"
+        android:textColor="@color/textColor"/>
+
+    <TextView
+        android:id="@+id/width_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/height_label"
+        android:layout_marginStart="18dp"
+        android:layout_marginBottom="9dp"
+        android:layout_toEndOf="@id/width_label"
+        android:text=""
+        android:textSize="18sp"
+        android:textColor="@color/textColor"/>
+
+
+    <TextView
+        android:id="@+id/date_label"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/width_label"
+        android:layout_marginStart="18dp"
+        android:layout_marginBottom="9dp"
+        android:text="@string/date"
+        android:textSize="18sp"
+        android:textColor="@color/textColor"/>
+
+    <TextView
+        android:id="@+id/date_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/width_label"
+        android:layout_marginStart="18dp"
+        android:layout_marginBottom="9dp"
+        android:layout_toEndOf="@id/date_label"
+        android:text=""
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/time_label"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/date_label"
+        android:layout_marginStart="18dp"
+        android:layout_marginBottom="9dp"
+        android:text="@string/time"
+        android:textSize="18sp"
+        android:textColor="@color/textColor"/>
+
+    <TextView
+        android:id="@+id/time_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/date_label"
+        android:layout_marginStart="18dp"
+        android:layout_marginBottom="40dp"
+        android:layout_toEndOf="@id/time_label"
+        android:text=""
+        android:textSize="18sp"
+        android:textColor="@color/textColor"/>
+
+
+</android.widget.RelativeLayout>

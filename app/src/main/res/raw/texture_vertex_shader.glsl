@@ -1,5 +1,4 @@
 attribute vec4 a_Position;
-//uniform mat4 u_Matrix;
 attribute vec2 a_Texture;
 varying vec2 v_Texture;
 

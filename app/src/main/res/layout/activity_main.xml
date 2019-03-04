@@ -353,11 +353,14 @@
 
     <RelativeLayout
         android:id="@+id/gl_layout"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="380dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tool_bar">
+
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/shareActionButton"
             android:layout_width="wrap_content"
@@ -367,10 +370,11 @@
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
             android:clickable="true"
-            app:srcCompat="@drawable/share_variant"
             android:focusable="true"
             android:visibility="invisible"
-            app:backgroundTint="@color/colorPrimaryDark"/>
+            app:backgroundTint="@color/colorPrimaryDark"
+            app:srcCompat="@drawable/share_variant" />
+
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/saveActionButton"
             android:layout_width="wrap_content"
@@ -380,10 +384,11 @@
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
             android:clickable="true"
-            app:srcCompat="@drawable/content_save"
             android:focusable="true"
             android:visibility="invisible"
-            app:backgroundTint="@color/colorPrimaryDark"/>
+            app:backgroundTint="@color/colorPrimaryDark"
+            app:srcCompat="@drawable/content_save" />
+
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/chackmarkActionButton"
             android:layout_width="wrap_content"
@@ -393,23 +398,10 @@
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
             android:clickable="true"
-            app:srcCompat="@drawable/check"
             android:focusable="true"
             android:visibility="invisible"
-            app:backgroundTint="@color/colorPrimaryDark" />
-
-        <Button
-            android:id="@+id/reset_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/reset_btn"
-            android:background="@android:color/transparent"
-            android:visibility="invisible"/>
-
+            app:backgroundTint="@color/colorPrimaryDark"
+            app:srcCompat="@drawable/check" />
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

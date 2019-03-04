@@ -7,10 +7,15 @@
     <string name="opengl_ex">Hues</string>
     <string name="gamma">Gamma</string>
     <string name="anotherfilter">AnotherFilter</string>
-    <string name="pick_option" >Open from</string>
+    <string name="pick_option">Open from</string>
     <string name="temperature">Temperature</string>
     <string name="cancel_button">reset</string>
     <string name="reset_btn">reset</string>
+    <string name="info">info</string>
+    <string name="date">Date:</string>
+    <string name="width">Width:</string>
+    <string name="height_label">Height:</string>
+    <string name="time">Time:</string>
     <string-array name="Options">
         <item>camera</item>
         <item>gallery</item>

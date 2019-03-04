@@ -8,7 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ConfigurationInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
@@ -24,7 +26,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
@@ -32,10 +33,12 @@ import android.widget.Switch;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -44,11 +47,13 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         Switch.OnCheckedChangeListener,
         OpenImageDialogFragment.OpenImageDialogCommunicator, GLSurfaceView.OnTouchListener {
 
-    // Requests
+    // Requests and tags
     private static final int CAMERA_REQUEST = 4321;
     private static final int GALLERY_REQUEST = 1234;
     private static final int PERMISSION_REQUEST = 1111;
-    private static final String SHOW_DIALOG_TAG = "OPEN_IMAGE";
+    private static final String SHOW_IMAGE_OPEN_DIALOG_TAG = "OPEN_IMAGE";
+    private static final String SHOW_IMAGE_INFO_DIALOG_TAG = "IMAGE_INFO";
+    public static final String SHOW_IMAGE_DATA_DIALOG_TAG = "IMAGE_DATA";
 
     // OpenGl
     // private boolean rendererSet = false;
@@ -59,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private FilterHelper filterHelper = new FilterHelper();
     private Bitmap in_image;
     private RelativeLayout rl;
+    private ResizeUtils resizeUtils;
 
     private Switch autofix;
     private SeekBar bright;
@@ -76,13 +82,17 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private SeekBar black;
     private SeekBar white;
     private Button resetButton;
+    private Button infoButton;
 
     OpenImageDialogFragment mOpenImageDialogFragment;
+    ImageInfoDialogFragment mImageInfoDialogCommunicator;
+
     private ScrollView scrollView;
     private FloatingActionButton chackmarkButton;
     private FloatingActionButton shareButton;
     private FloatingActionButton saveButton;
     private boolean isFabMenuOpen = false;
+    private String in_image_real_path;
 
     @SuppressLint("CheckResult")
     @Override
@@ -90,6 +100,9 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         checkSupportES2();
+
+        //ResizeUtils init
+        resizeUtils = new ResizeUtils();
 
         // Toolbar
         Toolbar toolbar = findViewById(R.id.tool_bar);
@@ -105,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         Button open = toolbar.findViewById(R.id.button);
         open.setOnClickListener(view -> {
             mOpenImageDialogFragment = new OpenImageDialogFragment();
-            mOpenImageDialogFragment.show(getFragmentManager(), SHOW_DIALOG_TAG);
+            mOpenImageDialogFragment.show(getFragmentManager(), SHOW_IMAGE_OPEN_DIALOG_TAG);
         });
 
         // Check button
@@ -129,7 +142,6 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         shareButton = findViewById(R.id.shareActionButton);
         shareButton.setOnClickListener(v -> {
             if (ContextCompat.checkSelfPermission(this, "android.permission.WRITE_EXTERNAL_STORAGE") == 0) {
-                String filename = saveImage(glRenderer.getBmp());
                 Intent shareIntent = new Intent(Intent.ACTION_SEND);
                 shareIntent.setType("image/*");
                 String stringBuilder = Environment.getExternalStorageDirectory().getPath() + "/" +
@@ -142,13 +154,33 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         });
 
         // Reset button
-        resetButton = findViewById(R.id.reset_button);
+        resetButton = toolbar.findViewById(R.id.reset_button);
         resetButton.setOnClickListener(v -> {
             resetFiltersUI();
             glSurfaceView.queueEvent(() -> {
                 glRenderer.setFilters(new ArrayList<>());
                 glSurfaceView.requestRender();
             });
+        });
+
+        // Info button
+        infoButton = toolbar.findViewById(R.id.info_image_button);
+        infoButton.setOnClickListener(v -> {
+            try {
+                ExifInterface exifInterface = new ExifInterface(in_image_real_path);
+                Bundle bundle = new Bundle();
+                bundle.putStringArrayList(SHOW_IMAGE_DATA_DIALOG_TAG, new ArrayList<>(Arrays.asList(
+                        exifInterface.getAttribute(ExifInterface.TAG_IMAGE_LENGTH),
+                        exifInterface.getAttribute(ExifInterface.TAG_IMAGE_WIDTH),
+                        exifInterface.getAttribute(ExifInterface.TAG_GPS_DATESTAMP),
+                        exifInterface.getAttribute(ExifInterface.TAG_GPS_TIMESTAMP))));
+
+                mImageInfoDialogCommunicator = new ImageInfoDialogFragment();
+                mImageInfoDialogCommunicator.setArguments(bundle);
+                mImageInfoDialogCommunicator.show(getFragmentManager(), SHOW_IMAGE_INFO_DIALOG_TAG);
+            } catch (IOException e) {
+                Toast.makeText(this, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
 
         // Filters
@@ -185,6 +217,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         sepia.setOnCheckedChangeListener(this);
         gray.setOnCheckedChangeListener(this);
         posterize.setOnCheckedChangeListener(this);
+
     }
 
     private void closeFabMenu() {
@@ -246,6 +279,9 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                 case GALLERY_REQUEST:
                     try {
                         in_image = (MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData()));
+                        // Just get the "real" image path
+                        Uri tempUri = getImageUri(getApplicationContext(), in_image);
+                        in_image_real_path = getRealPathFromURI(tempUri);
                     } catch (IOException e) {
                         Log.i("TAG", "Some exception " + e);
                     }
@@ -302,12 +338,15 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         glSurfaceView.setRenderer(glRenderer);
         glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
         glSurfaceView.setOnTouchListener(this);
+
+        resizeUtils.resizeView(rl, in_image.getHeight(), in_image.getWidth(), getApplicationContext());
         rl.addView(glSurfaceView);
 
         chackmarkButton.show();
         shareButton.show();
         saveButton.show();
         resetButton.setVisibility(View.VISIBLE);
+        infoButton.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -493,5 +532,19 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         gray.setChecked(false);
         posterize.setChecked(false);
         if(!filters.isEmpty()) filters = new ArrayList<>();
+    }
+
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
+    }
+
+    public String getRealPathFromURI(Uri uri) {
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        cursor.moveToFirst();
+        int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+        return cursor.getString(idx);
     }
 }

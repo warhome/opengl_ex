@@ -3,23 +3,45 @@ package com.example.misaka.opengl_ex;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
-import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 public class ResizeUtils {
+//    public void resizeView(RelativeLayout relativeLayout ,float imageHeight, float imageWidth, Context context){
+//        DisplayMetrics screenDpi = context.getResources().getDisplayMetrics();
+//
+//        float dpiImageHeight = convertPixelsToDp(imageHeight, context);
+//        float dpiImageWidth = convertPixelsToDp(imageWidth, context);
+//        float resizeCoeff = dpiImageHeight / dpiImageWidth;
+//
+//        float viewW = screenDpi.densityDpi;
+//        float viewH = resizeCoeff * screenDpi.densityDpi;
+//
+//        relativeLayout.getLayoutParams().height = (int)convertDpToPixel(viewH, context);
+//    }
 
-    public void ResizeView(View view, float imageHeight, float imageWidth, Context context){
-        float dpiImageHeight = convertPixelsToDp(imageHeight, context);
-        float dpiImageWidth = convertPixelsToDp(imageWidth, context);
+    // Set height and width for OpenGL layout, depending on image parameters
+    void resizeView(RelativeLayout relativeLayout, float imageHeight, float imageWidth, Context context){
+        float displayH = context.getResources().getDisplayMetrics().heightPixels;
+        float displayW = context.getResources().getDisplayMetrics().widthPixels;
 
-        float coeff = dpiImageHeight / dpiImageWidth;
+        // OpenGL layout should not occupy more than 50% of the screen
+        float maximumH = displayH * 0.5f;
+        float coeff;
 
-        /*while()
+        if(imageHeight > imageWidth) coeff = imageHeight / imageWidth;
+        else coeff = imageWidth / imageHeight;
 
-        if(dpiImageHeight > view.getHeight() || dpiImageWidth > view.getWidth()) {
-            float coeff = dpiImageHeight / dpiImageWidth;
-            dpiImageWidth = view.getWidth();
+        float viewW = displayW;
+        float viewH = coeff * displayW;
+        if(viewH > maximumH){
+            viewH = maximumH;
+            if(imageHeight == imageWidth) viewW = viewH;
+            else viewW = viewW / coeff;
+        }
 
-        }*/
+        relativeLayout.getLayoutParams().width  = (int)viewW;
+        relativeLayout.getLayoutParams().height = (int)viewH;
     }
 
     public static float convertDpToPixel(float dp, Context context){
