@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
@@ -10,398 +9,62 @@
 
     <include
         android:id="@+id/tool_bar"
-        layout="@layout/tool_bar"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="0dp" />
-
-    <ScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/gl_layout"
-        app:layout_constraintVertical_bias="0.0"
-        android:visibility="invisible">
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/autofixTextView"
-                android:text="@string/autofix"
-                android:textSize="18sp"
-                android:textColor="@color/textColor"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_alignParentStart="true"
-                android:layout_marginTop="40dp"/>
-
-            <Switch
-                android:id="@+id/autofixSwitch"
-                android:layout_width="55dp"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@id/autofixTextView"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="40dp"
-                android:textColor="@color/textColor"
-                android:layout_marginTop="40dp"/>
-            <TextView
-                android:id="@+id/brightTextView"
-                android:text="@string/brightness"
-                android:textSize="18sp"
-                android:textColor="@color/textColor"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_alignParentStart="true"
-                android:layout_below="@id/autofixTextView"
-                android:layout_marginTop="22dp"/>
-
-            <SeekBar
-                android:id="@+id/seekBarBright"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/brightTextView"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="40dp"
-                android:layout_marginStart="40dp"
-                android:progress="50"
-                android:max="100"/>
-            <TextView
-                android:id="@+id/temperatureTextView"
-                android:text="@string/temperature"
-                android:textSize="18sp"
-                android:textColor="@color/textColor"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_alignParentStart="true"
-                android:layout_below="@id/brightTextView"
-                android:layout_marginTop="22dp"/>
-
-            <SeekBar
-                android:id="@+id/seekBarTemperature"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/temperatureTextView"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="40dp"
-                android:layout_marginStart="40dp"
-                android:progress="50"
-                android:max="100"/>
-            <TextView
-                android:id="@+id/ContrastTextView"
-                android:text="Contrast"
-                android:textSize="18sp"
-                android:textColor="@color/textColor"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_alignParentStart="true"
-                android:layout_below="@id/temperatureTextView"
-                android:layout_marginTop="22dp"/>
-
-            <SeekBar
-                android:id="@+id/seekBarContrast"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/ContrastTextView"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="40dp"
-                android:layout_marginStart="40dp"
-                android:progress="50"
-                android:max="100"/>
-            <TextView
-                android:id="@+id/FilllightTextView"
-                android:text="Fillight"
-                android:textSize="18sp"
-                android:textColor="@color/textColor"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_alignParentStart="true"
-                android:layout_below="@id/ContrastTextView"
-                android:layout_marginTop="22dp"/>
-
-            <SeekBar
-                android:id="@+id/seekBarFilllight"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/FilllightTextView"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="40dp"
-                android:layout_marginStart="40dp"
-                android:progress="50"
-                android:max="100"/>
-            <TextView
-                android:id="@+id/FisheyeTextView"
-                android:text="Fisheye"
-                android:textSize="18sp"
-                android:textColor="@color/textColor"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_alignParentStart="true"
-                android:layout_below="@id/FilllightTextView"
-                android:layout_marginTop="22dp"/>
-
-            <SeekBar
-                android:id="@+id/seekBarFishEye"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/FisheyeTextView"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="40dp"
-                android:layout_marginStart="40dp"
-                android:progress="50"
-                android:max="100"/>
-
-            <TextView
-                android:id="@+id/BlackWhiteTextView"
-                android:text="Black/White"
-                android:textSize="18sp"
-                android:textColor="@color/textColor"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_alignParentStart="true"
-                android:layout_below="@id/seekBarFishEye"
-                android:layout_marginTop="22dp"/>
-            <Switch
-                android:id="@+id/BlackWhiteSwitch"
-                android:layout_width="55dp"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@id/BlackWhiteTextView"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="40dp"
-                android:textColor="@color/textColor"
-                android:layout_marginTop="20dp"
-                android:layout_below="@id/FisheyeTextView"
-                />
-            <SeekBar
-                android:id="@+id/seekBarBlack"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/BlackWhiteTextView"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="40dp"
-                android:layout_marginStart="40dp"
-                android:progress="50"
-                android:max="100"/>
-            <SeekBar
-                android:id="@+id/seekBarWhite"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/seekBarBlack"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="40dp"
-                android:layout_marginStart="40dp"
-                android:progress="50"
-                android:max="100"/>
-
-            <TextView
-                android:id="@+id/crossprocessTextView"
-                android:text="Crossprocess"
-                android:textSize="18sp"
-                android:textColor="@color/textColor"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_alignParentStart="true"
-                android:layout_marginTop="20dp"
-                android:layout_below="@id/seekBarWhite"/>
-
-            <Switch
-                android:id="@+id/crossprocessSwitch"
-                android:layout_width="55dp"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@id/crossprocessTextView"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="40dp"
-                android:textColor="@color/textColor"
-                android:layout_marginTop="20dp"
-                android:layout_below="@id/seekBarWhite"
-                />
-            <TextView
-                android:id="@+id/documentaryTextView"
-                android:text="Documentary"
-                android:textSize="18sp"
-                android:textColor="@color/textColor"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_alignParentStart="true"
-                android:layout_marginTop="20dp"
-                android:layout_below="@id/crossprocessTextView"/>
-
-            <Switch
-                android:id="@+id/documentarySwitch"
-                android:layout_width="55dp"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@id/documentaryTextView"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="40dp"
-                android:textColor="@color/textColor"
-                android:layout_marginTop="20dp"
-                android:layout_below="@id/crossprocessTextView"/>
-            <TextView
-                android:id="@+id/negativeTextView"
-                android:text="Negative"
-                android:textSize="18sp"
-                android:textColor="@color/textColor"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_alignParentStart="true"
-                android:layout_marginTop="20dp"
-                android:layout_below="@id/documentaryTextView"/>
-
-            <Switch
-                android:id="@+id/negativeSwitch"
-                android:layout_width="55dp"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@id/negativeTextView"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="40dp"
-                android:textColor="@color/textColor"
-                android:layout_marginTop="20dp"
-                android:layout_below="@id/documentaryTextView"/>
-
-            <TextView
-                android:id="@+id/grayscaleTextView"
-                android:text="Grayscale"
-                android:textSize="18sp"
-                android:textColor="@color/textColor"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_alignParentStart="true"
-                android:layout_marginTop="20dp"
-                android:layout_below="@id/negativeTextView"/>
-
-            <Switch
-                android:id="@+id/grayscaleSwitch"
-                android:layout_width="55dp"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@id/grayscaleTextView"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="40dp"
-                android:textColor="@color/textColor"
-                android:layout_marginTop="20dp"
-                android:layout_below="@id/negativeTextView"/>
-
-
-            <TextView
-                android:id="@+id/posterizeTextView"
-                android:text="Posterize"
-                android:textSize="18sp"
-                android:textColor="@color/textColor"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_alignParentStart="true"
-                android:layout_marginTop="20dp"
-                android:layout_below="@id/grayscaleTextView"/>
-
-            <Switch
-                android:id="@+id/posterizeSwitch"
-                android:layout_width="55dp"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@id/posterizeTextView"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="40dp"
-                android:textColor="@color/textColor"
-                android:layout_marginTop="20dp"
-                android:layout_below="@id/grayscaleTextView"/>
-
-            <TextView
-                android:id="@+id/sepiaTextView"
-                android:text="Sepia"
-                android:textSize="18sp"
-                android:textColor="@color/textColor"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_alignParentStart="true"
-                android:layout_marginTop="20dp"
-                android:layout_below="@id/posterizeSwitch"/>
-
-            <Switch
-                android:id="@+id/sepiaSwitch"
-                android:layout_width="55dp"
-                android:layout_height="wrap_content"
-                android:layout_alignEnd="@id/sepiaTextView"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="40dp"
-                android:textColor="@color/textColor"
-                android:layout_marginTop="20dp"
-                android:layout_below="@id/posterizeSwitch"/>
-
-        </RelativeLayout>
-    </ScrollView>
+        layout="@layout/tool_bar" />
 
     <RelativeLayout
         android:id="@+id/gl_layout"
-        android:layout_width="0dp"
-        android:layout_height="380dp"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        app:layout_anchor="@id/tool_bar"
+        app:layout_anchorGravity="bottom"
+        android:layout_gravity="bottom"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tool_bar">
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/shareActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:visibility="invisible"
-            app:backgroundTint="@color/colorPrimaryDark"
-            app:srcCompat="@drawable/share_variant" />
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/saveActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:visibility="invisible"
-            app:backgroundTint="@color/colorPrimaryDark"
-            app:srcCompat="@drawable/content_save" />
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/chackmarkActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:visibility="invisible"
-            app:backgroundTint="@color/colorPrimaryDark"
-            app:srcCompat="@drawable/check" />
+        app:layout_constraintRight_toRightOf="parent">
     </RelativeLayout>
 
-</android.support.constraint.ConstraintLayout>
+    <include
+        android:id="@+id/bottom_sheet"
+        android:visibility="invisible"
+        layout="@layout/bottom_sheet_text" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/shareActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@+id/bottom_sheet"
+        app:layout_anchorGravity="top|end"
+        android:layout_margin="20dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="invisible"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:srcCompat="@drawable/share_variant" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/saveActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@+id/bottom_sheet"
+        app:layout_anchorGravity="top|end"
+        android:layout_margin="20dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="invisible"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:srcCompat="@drawable/content_save" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/chackmarkActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@+id/bottom_sheet"
+        app:layout_anchorGravity="top|end"
+        android:layout_margin="20dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="invisible"
+        app:backgroundTint="@color/colorPrimaryDark"
+        app:srcCompat="@drawable/check" />
+</android.support.design.widget.CoordinatorLayout>

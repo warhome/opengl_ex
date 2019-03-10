@@ -26,6 +26,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
@@ -84,6 +85,8 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
     private Button resetButton;
     private Button infoButton;
 
+    private LinearLayout bottomSheet;
+
     OpenImageDialogFragment mOpenImageDialogFragment;
     ImageInfoDialogFragment mImageInfoDialogCommunicator;
 
@@ -113,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
         // ScrollView (filters)
         scrollView = findViewById(R.id.scrollView);
+        bottomSheet = findViewById(R.id.bottom_sheet);
 
         // Open file from gallery/camera (dialog)
         Button open = toolbar.findViewById(R.id.button);
@@ -280,8 +284,8 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
                     try {
                         in_image = (MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData()));
                         // Just get the "real" image path
-                        Uri tempUri = getImageUri(getApplicationContext(), in_image);
-                        in_image_real_path = getRealPathFromURI(tempUri);
+//                        Uri tempUri = getImageUri(getApplicationContext(), in_image);
+//                        in_image_real_path = getRealPathFromURI(tempUri);
                     } catch (IOException e) {
                         Log.i("TAG", "Some exception " + e);
                     }
@@ -347,6 +351,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         saveButton.show();
         resetButton.setVisibility(View.VISIBLE);
         infoButton.setVisibility(View.VISIBLE);
+        bottomSheet.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -545,6 +550,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         Cursor cursor = getContentResolver().query(uri, null, null, null, null);
         cursor.moveToFirst();
         int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+        Toast.makeText(this, cursor.getString(idx), Toast.LENGTH_SHORT).show();
         return cursor.getString(idx);
     }
 }

@@ -16,6 +16,9 @@
     <string name="width">Width:</string>
     <string name="height_label">Height:</string>
     <string name="time">Time:</string>
+    <string name="bottom_sheet_peek">bottom_sheet_peek</string>
+    <string name="bottom_sheet_content">bottom_sheet_content</string>
+    <string name="descriptor">descriptor</string>
     <string-array name="Options">
         <item>camera</item>
         <item>gallery</item>

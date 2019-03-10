@@ -25,8 +25,8 @@ public class ResizeUtils {
         float displayH = context.getResources().getDisplayMetrics().heightPixels;
         float displayW = context.getResources().getDisplayMetrics().widthPixels;
 
-        // OpenGL layout should not occupy more than 50% of the screen
-        float maximumH = displayH * 0.5f;
+        // OpenGL layout should not occupy more than 80% of the screen
+        float maximumH = displayH * 0.8f;
         float coeff;
 
 //        if(imageHeight > imageWidth) coeff = imageHeight / imageWidth;
